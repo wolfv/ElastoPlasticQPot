@@ -1,0 +1,9 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+
+Name: ElastoPlasticQPot
+Description: Elasto-plastic model using multiple quadratic potentials
+Requires:
+Version: @ELASTOPLASTICQPOT_VERSION_NUMBER@
+Libs:
+Cflags: -I${prefix}/@INCLUDE_INSTALL_DIR@
