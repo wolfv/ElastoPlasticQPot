@@ -16,7 +16,7 @@
 namespace ElastoPlasticQPot {
 namespace Cartesian2d {
 
-// -------------------------------------------------------------------------------------------------
+// --------------------------------------------- alias ---------------------------------------------
 
 namespace cm = cppmat::cartesian2d;
 
@@ -24,13 +24,21 @@ typedef cppmat::cartesian2d::tensor2 <double> T2;
 typedef cppmat::cartesian2d::tensor2s<double> T2s;
 typedef cppmat::cartesian2d::tensor2d<double> T2d;
 
+typedef cppmat::view::cartesian2d::tensor2 <double> vT2;
+typedef cppmat::view::cartesian2d::tensor2s<double> vT2s;
+typedef cppmat::view::cartesian2d::tensor2d<double> vT2d;
+
 // -------------------------- equivalent stress/strain (Cartesian2d.cpp) ---------------------------
 
+inline double sigm(const T2s &Sig);
+inline double sigd(const T2s &Sig);
 inline double epsm(const T2s &Eps);
 inline double epsd(const T2s &Eps);
 
 // ----------------------- equivalent stress/strain (Cartesian2d_Matrix.cpp) -----------------------
 
+inline ArrD sigm(const ArrD &Sig);
+inline ArrD sigd(const ArrD &Sig);
 inline ArrD epsm(const ArrD &Eps);
 inline ArrD epsd(const ArrD &Eps);
 
@@ -124,7 +132,7 @@ struct Type {
   };
 };
 
-// ---------------------- Matrix of material points (Cartesian2d_Matrix.cpp) -----------------------
+// ------------- matrix of material points of different types (Cartesian2d_Matrix.cpp) -------------
 
 class Matrix
 {

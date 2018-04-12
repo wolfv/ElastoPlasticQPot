@@ -2,103 +2,115 @@
 # required to specify the c++ standard
 cmake_minimum_required(VERSION 3.0)
 
-# define project information
-project(ElastoPlasticQPot)
-
-# automatically parse the version number
-file(READ "${CMAKE_CURRENT_SOURCE_DIR}/ElastoPlasticQPot/ElastoPlasticQPot.h" _ElastoPlasticQPot_version_header)
-string(REGEX MATCH "define[ \t]+ELASTOPLASTICQPOT_WORLD_VERSION[ \t]+([0-9]+)" _ElastoPlasticQPot_world_version_match "${_ElastoPlasticQPot_version_header}")
-set(ELASTOPLASTICQPOT_WORLD_VERSION "${CMAKE_MATCH_1}")
-string(REGEX MATCH "define[ \t]+ELASTOPLASTICQPOT_MAJOR_VERSION[ \t]+([0-9]+)" _ElastoPlasticQPot_major_version_match "${_ElastoPlasticQPot_version_header}")
-set(ELASTOPLASTICQPOT_MAJOR_VERSION "${CMAKE_MATCH_1}")
-string(REGEX MATCH "define[ \t]+ELASTOPLASTICQPOT_MINOR_VERSION[ \t]+([0-9]+)" _ElastoPlasticQPot_minor_version_match "${_ElastoPlasticQPot_version_header}")
-set(ELASTOPLASTICQPOT_MINOR_VERSION "${CMAKE_MATCH_1}")
-set(ELASTOPLASTICQPOT_VERSION_NUMBER ${ELASTOPLASTICQPOT_WORLD_VERSION}.${ELASTOPLASTICQPOT_MAJOR_VERSION}.${ELASTOPLASTICQPOT_MINOR_VERSION})
-
 # required for install
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
-# set c++ standard -> c++14
+# project settings
+# ----------------
+
+# define project information
+project(ElastoPlasticQPot)
+
+# list with header files
+set(headers
+  ${PROJECT_NAME}/Cartesian2d.cpp
+  ${PROJECT_NAME}/Cartesian2d.h
+  ${PROJECT_NAME}/Cartesian2d_Cusp.cpp
+  ${PROJECT_NAME}/Cartesian2d_Elastic.cpp
+  ${PROJECT_NAME}/Cartesian2d_Matrix.cpp
+  ${PROJECT_NAME}/Cartesian2d_Smooth.cpp
+  ${PROJECT_NAME}/ElastoPlasticQPot.h
+)
+
+# options
+# -------
+
+# set options
+option(PKGCONFIG "Build pkg-config ${PROJECT_NAME}.pc file" ON)
+
+# disable pkg-config for native Windows builds
+if(WIN32 OR CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
+  option(PKGCONFIG "Build pkg-config ${PROJECT_NAME}.pc file" OFF)
+endif()
+
+# paths
+# -----
+
+set(ELASTOPLASTICQPOT_ROOT_DIR    "${CMAKE_INSTALL_PREFIX}")
+set(ELASTOPLASTICQPOT_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}")
+set(INCLUDE_INSTALL_DIR           "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")
+set(CMAKEPACKAGE_INSTALL_DIR      "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
+set(PKGCONFIG_INSTALL_DIR         "${CMAKE_INSTALL_DATADIR}/pkgconfig")
+
+# version
+# -------
+
+# automatically parse the version number
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/${PROJECT_NAME}.h" version)
+string(REGEX MATCH "define[ \t]+ELASTOPLASTICQPOT_WORLD_VERSION[ \t]+([0-9]+)" _ "${version}")
+set(world_version "${CMAKE_MATCH_1}")
+string(REGEX MATCH "define[ \t]+ELASTOPLASTICQPOT_MAJOR_VERSION[ \t]+([0-9]+)" _ "${version}")
+set(major_version "${CMAKE_MATCH_1}")
+string(REGEX MATCH "define[ \t]+ELASTOPLASTICQPOT_MINOR_VERSION[ \t]+([0-9]+)" _ "${version}")
+set(minor_version "${CMAKE_MATCH_1}")
+set(ELASTOPLASTICQPOT_VERSION_NUMBER ${world_version}.${major_version}.${minor_version})
+
+# C++ standard
+# ------------
+
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 if(NOT CMAKE_CXX_STANDARD OR CMAKE_CXX_STANDARD LESS 14)
   set(CMAKE_CXX_STANDARD 14)
 endif()
 
-# set paths where 'ElastoPlasticQPot' will be installed
-# - root
-set(ELASTOPLASTICQPOT_ROOT_DIR ${CMAKE_INSTALL_PREFIX})
-# - headers
-set(ELASTOPLASTICQPOT_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}")
-# - headers
-set(INCLUDE_INSTALL_DIR
-  "${CMAKE_INSTALL_INCLUDEDIR}/ElastoPlasticQPot"
-  CACHE PATH "Path, relative to CMAKE_PREFIX_PATH, where the ElastoPlasticQPot header files are installed"
-)
-# - CMake configuration
-set(CMAKEPACKAGE_INSTALL_DIR
-  "${CMAKE_INSTALL_DATADIR}/ElastoPlasticQPot"
-  CACHE PATH "Path where ElastoPlasticQPotConfig.cmake is installed"
-)
-# - pkg-config
-set(PKGCONFIG_INSTALL_DIR
-  "${CMAKE_INSTALL_DATADIR}/pkgconfig"
-  CACHE PATH "Path where ElastoPlasticQPot.pc is installed"
-)
+# configure CMake
+# ---------------
 
-# list all header files
-set(ELASTOPLASTICQPOT_HEADERS
-  ElastoPlasticQPot/Cartesian2d.cpp
-  ElastoPlasticQPot/Cartesian2d.h
-  ElastoPlasticQPot/Cartesian2d_Cusp.cpp
-  ElastoPlasticQPot/Cartesian2d_Elastic.cpp
-  ElastoPlasticQPot/Cartesian2d_Matrix.cpp
-  ElastoPlasticQPot/Cartesian2d_Smooth.cpp
-  ElastoPlasticQPot/ElastoPlasticQPot.h
-)
-
-# Disable pkg-config for native Windows builds
-if(NOT WIN32 OR NOT CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
-  option(ELASTOPLASTICQPOT_BUILD_PKGCONFIG "Build pkg-config .pc file for ElastoPlasticQPot" ON)
-endif()
-
-# build pkg-config file -> fill in relevant values
-if(ELASTOPLASTICQPOT_BUILD_PKGCONFIG)
-  configure_file(ElastoPlasticQPot.pc.in ElastoPlasticQPot.pc @ONLY)
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ElastoPlasticQPot.pc DESTINATION ${PKGCONFIG_INSTALL_DIR})
-endif()
-
-# configure CMake file
 configure_package_config_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/ElastoPlasticQPotConfig.cmake.in
-  ${CMAKE_CURRENT_BINARY_DIR}/ElastoPlasticQPotConfig.cmake
+  ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
   PATH_VARS ELASTOPLASTICQPOT_INCLUDE_DIR ELASTOPLASTICQPOT_ROOT_DIR
   INSTALL_DESTINATION ${CMAKEPACKAGE_INSTALL_DIR}
   NO_CHECK_REQUIRED_COMPONENTS_MACRO
 )
 
 # install
-# - CMake-file
+# -------
+
+# pkg-config
+if(PKGCONFIG)
+  configure_file(${PROJECT_NAME}.pc.in ${PROJECT_NAME}.pc @ONLY)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc DESTINATION ${PKGCONFIG_INSTALL_DIR})
+endif()
+
+# CMake
 install(FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/ElastoPlasticQPotConfig.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
   DESTINATION
   ${CMAKEPACKAGE_INSTALL_DIR}
 )
-# - headers
+
+# headers
 install(FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/${ELASTOPLASTICQPOT_HEADERS}
+  ${CMAKE_CURRENT_SOURCE_DIR}/${headers}
   DESTINATION
-  ${INCLUDE_INSTALL_DIR}/ElastoPlasticQPot
+  ${INCLUDE_INSTALL_DIR}/${PROJECT_NAME}
 )
 
 # print information to screen
+# ---------------------------
+
 message(STATUS "")
 message(STATUS "+---------------------------------------------------------------------------------")
 message(STATUS "|")
-message(STATUS "| Use 'make install' to install in '${CMAKE_INSTALL_PREFIX}'")
+message(STATUS "| Use 'make install' to install in")
+message(STATUS "|   ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "|")
 message(STATUS "| To specify a custom directory call")
-message(STATUS "|   cmake . -DCMAKE_INSTALL_PREFIX=yourprefix")
+message(STATUS "|   cmake /path/to/${PROJECT_NAME} -DCMAKE_INSTALL_PREFIX=yourprefix")
+message(STATUS "|")
 message(STATUS "| For custom paths, add the following line to your '~/.bashrc'")
 message(STATUS "|   export PKG_CONFIG_PATH=${CMAKE_INSTALL_PREFIX}/share/pkgconfig:$PKG_CONFIG_PATH")
 message(STATUS "|")

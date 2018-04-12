@@ -16,41 +16,38 @@
 namespace ElastoPlasticQPot {
 namespace Cartesian2d {
 
-// --------------------------------------------- mean ----------------------------------------------
+// ------------------------------------------ mean strain ------------------------------------------
 
-inline ArrD epsm(const ArrD &matrix)
+inline ArrD epsm(const ArrD &strain)
 {
   // number of tensor components
-  size_t ncomp = 3;
+  static const size_t ncomp = 3;
 
   // check input
-  assert( matrix.shape(-1) == ncomp );
-  assert( matrix.ndim()    >= 2     );
+  assert( strain.shape(-1) == ncomp );
+  assert( strain.ndim()    >= 2     );
 
   // get shape of the input matrix
-  std::vector<size_t> shape = matrix.shape();
+  std::vector<size_t> shape = strain.shape();
 
-  // convert shape to corresponding shape without the tensor-components
+  // remove tensor-components from the shape
   shape.erase(shape.end()-1, shape.end());
 
-  // allocate output
+  // allocate output as matrix of scalars
   ArrD out(shape);
-
-  // iterator to beginning of the matrices containing the strain
-  auto strain = matrix.begin();
 
   // start threads
   #pragma omp parallel
   {
-    // - per thread; strain tensor
-    T2s Eps;
+    // - per thread; temporary variables
+    vT2s Eps;
 
     // - per thread; compute
     #pragma omp for
     for ( size_t i = 0 ; i < out.size() ; ++i )
     {
-      // -- copy from matrix of strains
-      std::copy(strain+i*ncomp, strain+(i+1)*ncomp, Eps.data());
+      // -- map from matrix of strains
+      Eps.map(&strain[i*ncomp]);
       // -- compute the mean strain
       out[i] = Eps.trace()/2.;
     }
@@ -61,40 +58,38 @@ inline ArrD epsm(const ArrD &matrix)
 
 // ---------------------------------- equivalent strain deviator -----------------------------------
 
-inline ArrD epsd(const ArrD &matrix)
+inline ArrD epsd(const ArrD &strain)
 {
   // number of tensor components
-  size_t ncomp = 3;
+  static const size_t ncomp = 3;
 
   // check input
-  assert( matrix.shape(-1) == ncomp );
+  assert( strain.shape(-1) == ncomp );
 
   // get shape of the input matrix
-  std::vector<size_t> shape = matrix.shape();
+  std::vector<size_t> shape = strain.shape();
 
-  // convert shape to corresponding shape without the tensor-components
+  // remove tensor-components from the shape
   shape.erase(shape.end()-1, shape.end());
 
-  // allocate output
+  // allocate output as matrix of scalars
   ArrD out(shape);
-
-  // iterator to beginning of the matrices containing the strain
-  auto strain = matrix.begin();
 
   // start threads
   #pragma omp parallel
   {
     // - per thread; temporary variables
     double epsm;
-    T2s    Eps, Epsd;
+    vT2s   Eps;
+    T2s    Epsd;
     T2d    I = cm::identity2<double>();
 
     // - per thread; compute
     #pragma omp for
     for ( size_t i = 0 ; i < out.size() ; ++i )
     {
-      // -- copy from matrix of strains
-      std::copy(strain+i*ncomp, strain+(i+1)*ncomp, Eps.data());
+      // -- map from matrix of strains
+      Eps.map(&strain[i*ncomp]);
       // -- compute the strain deviator
       epsm = Eps.trace()/2.;
       Epsd = Eps - epsm*I;
@@ -105,6 +100,11 @@ inline ArrD epsd(const ArrD &matrix)
 
   return out;
 }
+
+// ----------------------------------- mean & equivalent stress ------------------------------------
+
+inline ArrD sigm(const ArrD &stress) { return epsm(stress); }
+inline ArrD sigd(const ArrD &stress) { return epsd(stress); }
 
 // ------------------------------------------ constructor ------------------------------------------
 
@@ -267,7 +267,7 @@ inline ArrD Matrix::stress(const ArrD &matrix) const
         case Type::Smooth : Sig = m_Smooth [m_index[i]].stress(Eps); break;
         default: std::runtime_error("Unknown material");
       }
-      // -- store stress
+      // -- store stress to matrix
       std::copy(Sig.begin(), Sig.end(), stress+i*m_ncomp);
     }
   }
@@ -308,13 +308,13 @@ inline ArrD Matrix::energy(const ArrD &matrix) const
     // - per thread; strain tensor
     T2s Eps;
 
-    // - per thread; constitutive response
+    // - per thread; compute energy
     #pragma omp for
     for ( size_t i = 0 ; i < m_type.size() ; ++i )
     {
       // -- copy strain from matrix
       std::copy(strain+i*m_ncomp, strain+(i+1)*m_ncomp, Eps.data());
-      // -- compute energy
+      // -- compute energy and store to matrix
       switch ( m_type[i] )
       {
         case Type::Elastic: out[i] = m_Elastic[m_index[i]].energy(Eps); break;
@@ -361,13 +361,13 @@ inline ArrS Matrix::find(const ArrD &matrix) const
     // - per thread; strain tensor
     T2s Eps;
 
-    // - per thread; constitutive response
+    // - per thread; find index
     #pragma omp for
     for ( size_t i = 0 ; i < m_type.size() ; ++i )
     {
       // -- copy strain from matrix
       std::copy(strain+i*m_ncomp, strain+(i+1)*m_ncomp, Eps.data());
-      // -- compute index
+      // -- find index and store to matrix
       switch ( m_type[i] )
       {
         case Type::Elastic: out[i] = m_Elastic[m_index[i]].find(Eps); break;
@@ -400,23 +400,16 @@ inline ArrD Matrix::eps_y(const ArrS &matrix) const
   ArrD out(matrix.shape());
 
   // start threads
-  #pragma omp parallel
+  #pragma omp parallel for
+  for ( size_t i = 0 ; i < m_type.size() ; ++i )
   {
-    // - per thread; strain tensor
-    T2s Eps;
-
-    // - per thread; constitutive response
-    #pragma omp for
-    for ( size_t i = 0 ; i < m_type.size() ; ++i )
+    // -- get yield strain and store to matrix
+    switch ( m_type[i] )
     {
-      // -- get yield strain
-      switch ( m_type[i] )
-      {
-        case Type::Elastic: out[i] = m_Elastic[m_index[i]].eps_y(matrix[i]); break;
-        case Type::Cusp   : out[i] = m_Cusp   [m_index[i]].eps_y(matrix[i]); break;
-        case Type::Smooth : out[i] = m_Smooth [m_index[i]].eps_y(matrix[i]); break;
-        default: std::runtime_error("Unknown material");
-      }
+      case Type::Elastic: out[i] = m_Elastic[m_index[i]].eps_y(matrix[i]); break;
+      case Type::Cusp   : out[i] = m_Cusp   [m_index[i]].eps_y(matrix[i]); break;
+      case Type::Smooth : out[i] = m_Smooth [m_index[i]].eps_y(matrix[i]); break;
+      default: std::runtime_error("Unknown material");
     }
   }
 

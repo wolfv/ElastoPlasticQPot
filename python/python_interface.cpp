@@ -14,66 +14,47 @@
 
 #include "../src/ElastoPlasticQPot/ElastoPlasticQPot.h"
 
+// =================================================================================================
+
+// abbreviate name-space
 namespace py = pybind11;
 
-// =================================================================================================
-
+// abbreviate types(s)
 typedef ElastoPlasticQPot::ArrD ArrD;
 
-// =================================================================================================
+// ======================================= ElastoPlasticQPot =======================================
 
 PYBIND11_MODULE(ElastoPlasticQPot, m) {
 
-// =================================================================================================
-
-// set doc-string
-m.doc() = "Elasto-plastic material model";
+m.doc() = "Elasto-plastic material models";
 
 // ================================ ElastoPlasticQPot::Cartesian2d =================================
 
-py::module m2d = m.def_submodule("Cartesian2d", "2d Cartesian coordinates");
-
 {
 
+// create submodule
+py::module sm = m.def_submodule("Cartesian2d", "2d Cartesian coordinates");
+
+// abbreviate name-space
+namespace SM = ElastoPlasticQPot::Cartesian2d;
+
+// abbreviate types(s)
 typedef ElastoPlasticQPot::Cartesian2d::T2s T2s;
 
-namespace M = ElastoPlasticQPot::Cartesian2d;
+// -------------------------------------------------------------------------------------------------
+
+sm.def("epsm", py::overload_cast<const T2s & >(&SM::epsm), "Mean strain"        , py::arg("Eps"));
+sm.def("epsd", py::overload_cast<const T2s & >(&SM::epsd), "Eq. strain deviator", py::arg("Eps"));
+sm.def("epsm", py::overload_cast<const ArrD &>(&SM::epsm), "Mean strain"        , py::arg("Eps"));
+sm.def("epsd", py::overload_cast<const ArrD &>(&SM::epsd), "Eq. strain deviator", py::arg("Eps"));
+sm.def("sigm", py::overload_cast<const T2s & >(&SM::sigm), "Mean stress"        , py::arg("Sig"));
+sm.def("sigd", py::overload_cast<const T2s & >(&SM::sigd), "Eq. stress deviator", py::arg("Sig"));
+sm.def("sigm", py::overload_cast<const ArrD &>(&SM::sigm), "Mean stress"        , py::arg("Sig"));
+sm.def("sigd", py::overload_cast<const ArrD &>(&SM::sigd), "Eq. stress deviator", py::arg("Sig"));
 
 // -------------------------------------------------------------------------------------------------
 
-m2d.def("epsm",
-  py::overload_cast<const T2s &>(&M::epsm),
-  "Compute mean strain",
-  py::arg("Eps")
-);
-
-// -------------------------------------------------------------------------------------------------
-
-m2d.def("epsd",
-  py::overload_cast<const T2s &>(&M::epsd),
-  "Compute equivalent strain deviator",
-  py::arg("Eps")
-);
-
-// -------------------------------------------------------------------------------------------------
-
-m2d.def("epsm",
-  py::overload_cast<const ArrD &>(&M::epsm),
-  "Compute mean strain",
-  py::arg("Eps")
-);
-
-// -------------------------------------------------------------------------------------------------
-
-m2d.def("epsd",
-  py::overload_cast<const ArrD &>(&M::epsd),
-  "Compute equivalent strain deviator",
-  py::arg("Eps")
-);
-
-// -------------------------------------------------------------------------------------------------
-
-py::class_<M::Elastic>(m2d, "Elastic")
+py::class_<SM::Elastic>(sm, "Elastic")
   // constructor
   .def(
     py::init<double,double>(),
@@ -82,18 +63,18 @@ py::class_<M::Elastic>(m2d, "Elastic")
     py::arg("G")
   )
   // methods
-  .def("stress", &M::Elastic::stress)
-  .def("energy", &M::Elastic::energy)
-  .def("eps_y" , &M::Elastic::eps_y )
-  .def("find"  , py::overload_cast<const T2s &>(&M::Elastic::find, py::const_))
-  .def("find"  , py::overload_cast<double     >(&M::Elastic::find, py::const_))
+  .def("stress", &SM::Elastic::stress)
+  .def("energy", &SM::Elastic::energy)
+  .def("eps_y" , &SM::Elastic::eps_y )
+  .def("find"  , py::overload_cast<const T2s &>(&SM::Elastic::find, py::const_))
+  .def("find"  , py::overload_cast<double     >(&SM::Elastic::find, py::const_))
   // print to screen
-  .def("__repr__", [](const M::Elastic &a){
+  .def("__repr__", [](const SM::Elastic &a){
     return "<ElastoPlasticQPot.Cartesian2d.Elastic>"; });
 
 // -------------------------------------------------------------------------------------------------
 
-py::class_<M::Cusp>(m2d, "Cusp")
+py::class_<SM::Cusp>(sm, "Cusp")
   // constructor
   .def(
     py::init<double,double,const std::vector<double>&, bool>(),
@@ -104,18 +85,18 @@ py::class_<M::Cusp>(m2d, "Cusp")
     py::arg("init_elastic")=true
   )
   // methods
-  .def("stress", &M::Cusp::stress)
-  .def("energy", &M::Cusp::energy)
-  .def("eps_y" , &M::Cusp::eps_y )
-  .def("find"  , py::overload_cast<const T2s &>(&M::Cusp::find, py::const_))
-  .def("find"  , py::overload_cast<double     >(&M::Cusp::find, py::const_))
+  .def("stress", &SM::Cusp::stress)
+  .def("energy", &SM::Cusp::energy)
+  .def("eps_y" , &SM::Cusp::eps_y )
+  .def("find"  , py::overload_cast<const T2s &>(&SM::Cusp::find, py::const_))
+  .def("find"  , py::overload_cast<double     >(&SM::Cusp::find, py::const_))
   // print to screen
-  .def("__repr__", [](const M::Cusp &a){
+  .def("__repr__", [](const SM::Cusp &a){
     return "<ElastoPlasticQPot.Cartesian2d.Cusp>"; });
 
 // -------------------------------------------------------------------------------------------------
 
-py::class_<M::Smooth>(m2d, "Smooth")
+py::class_<SM::Smooth>(sm, "Smooth")
   // constructor
   .def(
     py::init<double,double,const std::vector<double>&, bool>(),
@@ -126,29 +107,29 @@ py::class_<M::Smooth>(m2d, "Smooth")
     py::arg("init_elastic")=true
   )
   // methods
-  .def("stress", &M::Smooth::stress)
-  .def("energy", &M::Smooth::energy)
-  .def("eps_y" , &M::Smooth::eps_y )
-  .def("find"  , py::overload_cast<const T2s &>(&M::Smooth::find, py::const_))
-  .def("find"  , py::overload_cast<double     >(&M::Smooth::find, py::const_))
+  .def("stress", &SM::Smooth::stress)
+  .def("energy", &SM::Smooth::energy)
+  .def("eps_y" , &SM::Smooth::eps_y )
+  .def("find"  , py::overload_cast<const T2s &>(&SM::Smooth::find, py::const_))
+  .def("find"  , py::overload_cast<double     >(&SM::Smooth::find, py::const_))
   // print to screen
-  .def("__repr__", [](const M::Smooth &a){
+  .def("__repr__", [](const SM::Smooth &a){
     return "<ElastoPlasticQPot.Cartesian2d.Smooth>"; });
 
 // -------------------------------------------------------------------------------------------------
 
-py::enum_<M::Type::Value>(m2d, "Type")
-    .value("Unset"       , M::Type::Unset)
-    .value("Elastic"     , M::Type::Elastic)
-    .value("Cusp"        , M::Type::Cusp)
-    .value("Smooth"      , M::Type::Smooth)
-    .value("PlanarCusp"  , M::Type::PlanarCusp)
-    .value("PlanarSmooth", M::Type::PlanarSmooth)
+py::enum_<SM::Type::Value>(sm, "Type")
+    .value("Unset"       , SM::Type::Unset)
+    .value("Elastic"     , SM::Type::Elastic)
+    .value("Cusp"        , SM::Type::Cusp)
+    .value("Smooth"      , SM::Type::Smooth)
+    .value("PlanarCusp"  , SM::Type::PlanarCusp)
+    .value("PlanarSmooth", SM::Type::PlanarSmooth)
     .export_values();
 
 // -------------------------------------------------------------------------------------------------
 
-py::class_<M::Matrix>(m2d, "Matrix")
+py::class_<SM::Matrix>(sm, "Matrix")
   // constructor
   .def(
     py::init<const std::vector<size_t>&>(),
@@ -156,16 +137,16 @@ py::class_<M::Matrix>(m2d, "Matrix")
     py::arg("shape")
   )
   // methods
-  .def("addElastic", &M::Matrix::addElastic)
-  .def("addCusp"   , &M::Matrix::addCusp)
-  .def("addSmooth" , &M::Matrix::addSmooth)
-  .def("type"      , &M::Matrix::type)
-  .def("stress"    , &M::Matrix::stress)
-  .def("energy"    , &M::Matrix::energy)
-  .def("find"      , &M::Matrix::find)
-  .def("eps_y"     , &M::Matrix::eps_y)
+  .def("addElastic", &SM::Matrix::addElastic)
+  .def("addCusp"   , &SM::Matrix::addCusp)
+  .def("addSmooth" , &SM::Matrix::addSmooth)
+  .def("type"      , &SM::Matrix::type)
+  .def("stress"    , &SM::Matrix::stress)
+  .def("energy"    , &SM::Matrix::energy)
+  .def("find"      , &SM::Matrix::find)
+  .def("eps_y"     , &SM::Matrix::eps_y)
   // print to screen
-  .def("__repr__", [](const M::Matrix &a){
+  .def("__repr__", [](const SM::Matrix &a){
     return "<ElastoPlasticQPot.Cartesian2d.Matrix>"; });
 
 // -------------------------------------------------------------------------------------------------

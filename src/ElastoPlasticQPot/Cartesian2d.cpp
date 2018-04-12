@@ -34,6 +34,11 @@ inline double epsd(const T2s &Eps)
   return std::sqrt(.5*Epsd.ddot(Epsd));
 }
 
+// ----------------------------------- mean & equivalent stress ------------------------------------
+
+inline double sigm(const T2s &Sig) { return epsm(Sig); }
+inline double sigd(const T2s &Sig) { return epsd(Sig); }
+
 // =================================================================================================
 
 }} // namespace ...
