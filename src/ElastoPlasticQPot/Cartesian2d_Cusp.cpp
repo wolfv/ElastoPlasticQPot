@@ -49,12 +49,12 @@ inline Cusp::Cusp(double K, double G, const std::vector<double> &epsy, bool init
 
   // check the number of yield strains
   if ( m_epsy.size() < 2 )
-    throw std::runtime_error("Specify at least two yield strains 'eps_y'");
+    throw std::runtime_error("Specify at least two yield strains 'epsy'");
 }
 
 // ----------------------------------------- yield stress ------------------------------------------
 
-inline double Cusp::eps_y(size_t i) const
+inline double Cusp::epsy(size_t i) const
 {
   return m_epsy[i];
 }
@@ -76,7 +76,7 @@ inline size_t Cusp::find(double epsd) const
 {
   // check extremes
   if ( epsd < m_epsy.front() or epsd >= m_epsy.back() )
-    throw std::runtime_error("Insufficient 'eps_y'");
+    throw std::runtime_error("Insufficient 'epsy'");
 
   // set initial search bounds and index
   size_t n = m_epsy.size()-1;  // upper-bound

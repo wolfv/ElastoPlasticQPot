@@ -62,9 +62,9 @@ public:
   double energy(const T2s &Eps) const;
 
   // find index of the current yield strain, return yield strain at this index
-  size_t find (const T2s &Eps ) const;
-  size_t find (double     epsd) const;
-  double eps_y(size_t     i   ) const;
+  size_t find(const T2s &Eps ) const;
+  size_t find(double     epsd) const;
+  double epsy(size_t     i   ) const;
 };
 
 // -------------------- material point - cusp potential (Cartesian2d_Cusp.cpp) ---------------------
@@ -88,9 +88,9 @@ public:
   double energy(const T2s &Eps) const;
 
   // find index of the current yield strain, return yield strain at this index
-  size_t find (const T2s &Eps ) const;
-  size_t find (double     epsd) const;
-  double eps_y(size_t     i   ) const;
+  size_t find(const T2s &Eps ) const;
+  size_t find(double     epsd) const;
+  double epsy(size_t     i   ) const;
 };
 
 // ------------------ material point - smooth potential (Cartesian2d_Smooth.cpp) -------------------
@@ -114,9 +114,9 @@ public:
   double energy(const T2s &Eps) const;
 
   // find index of the current yield strain, return yield strain at this index
-  size_t find (const T2s &Eps ) const;
-  size_t find (double     epsd) const;
-  double eps_y(size_t     i   ) const;
+  size_t find(const T2s &Eps ) const;
+  size_t find(double     epsd) const;
+  double epsy(size_t     i   ) const;
 };
 
 // ----------------------- enumerator to switch between material definitions -----------------------
@@ -176,8 +176,11 @@ public:
   ArrD energy(const ArrD &Eps) const;
 
   // find index of the current yield strain, return yield strain at this index
-  ArrS find  (const ArrD &Eps) const;
-  ArrD eps_y (const ArrS &i  ) const;
+  ArrS find(const ArrD &Eps) const;
+  ArrD epsy(const ArrS &i  ) const;
+
+  // find the equivalent plastic strain
+  ArrD epsp(const ArrD &Eps) const;
 
 };
 

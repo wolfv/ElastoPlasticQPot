@@ -12,7 +12,7 @@ include(GNUInstallDirs)
 # define project information
 project(ElastoPlasticQPot)
 
-# list with header files
+# list of header files
 set(headers
   ${PROJECT_NAME}/Cartesian2d.cpp
   ${PROJECT_NAME}/Cartesian2d.h

@@ -24,7 +24,7 @@ inline Elastic::Elastic(double K, double G) : m_K(K), m_G(G)
 
 // ----------------------------------------- yield stress ------------------------------------------
 
-inline double Elastic::eps_y(size_t i) const
+inline double Elastic::epsy(size_t i) const
 {
   UNUSED(i);
 
