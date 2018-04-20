@@ -57,14 +57,25 @@ public:
   Elastic(){};
   Elastic(double K, double G);
 
-  // compute stress or energy at "Eps"
-  T2s    stress(const T2s &Eps) const;
+  // stress
+  T2s stress(const T2s &Eps) const;
+
+  // energy
   double energy(const T2s &Eps) const;
 
-  // find index of the current yield strain, return yield strain at this index
-  size_t find(const T2s &Eps ) const;
-  size_t find(double     epsd) const;
-  double epsy(size_t     i   ) const;
+  // equivalent deviatoric strain
+  double epsd(const T2s &Eps) const;
+
+  // index of the current yield strain
+  size_t find(const T2s &Eps) const;
+  size_t find(double epsd) const;
+
+  // a certain yield strain
+  double epsy(size_t i) const;
+
+  // equivalent plastic strain
+  double epsp(const T2s &Eps) const;
+  double epsp(double epsd) const;
 };
 
 // -------------------- material point - cusp potential (Cartesian2d_Cusp.cpp) ---------------------
@@ -83,14 +94,25 @@ public:
   Cusp(){};
   Cusp(double K, double G, const std::vector<double> &epsy={}, bool init_elastic=true);
 
-  // compute stress or energy at "Eps"
-  T2s    stress(const T2s &Eps) const;
+  // stress
+  T2s stress(const T2s &Eps) const;
+
+  // energy
   double energy(const T2s &Eps) const;
 
-  // find index of the current yield strain, return yield strain at this index
-  size_t find(const T2s &Eps ) const;
-  size_t find(double     epsd) const;
-  double epsy(size_t     i   ) const;
+  // equivalent deviatoric strain
+  double epsd(const T2s &Eps) const;
+
+  // index of the current yield strain
+  size_t find(const T2s &Eps) const;
+  size_t find(double epsd) const;
+
+  // a certain yield strain
+  double epsy(size_t i) const;
+
+  // equivalent plastic strain
+  double epsp(const T2s &Eps) const;
+  double epsp(double epsd) const;
 };
 
 // ------------------ material point - smooth potential (Cartesian2d_Smooth.cpp) -------------------
@@ -109,14 +131,25 @@ public:
   Smooth(){};
   Smooth(double K, double G, const std::vector<double> &epsy={}, bool init_elastic=true);
 
-  // compute stress or energy at "Eps"
-  T2s    stress(const T2s &Eps) const;
+  // stress
+  T2s stress(const T2s &Eps) const;
+
+  // energy
   double energy(const T2s &Eps) const;
 
-  // find index of the current yield strain, return yield strain at this index
-  size_t find(const T2s &Eps ) const;
-  size_t find(double     epsd) const;
-  double epsy(size_t     i   ) const;
+  // equivalent deviatoric strain
+  double epsd(const T2s &Eps) const;
+
+  // index of the current yield strain
+  size_t find(const T2s &Eps) const;
+  size_t find(double epsd) const;
+
+  // a certain yield strain
+  double epsy(size_t i) const;
+
+  // equivalent plastic strain
+  double epsp(const T2s &Eps) const;
+  double epsp(double epsd) const;
 };
 
 // ----------------------- enumerator to switch between material definitions -----------------------
@@ -171,15 +204,19 @@ public:
     const ArrS &index, const ArrD &K, const ArrD &G, const ArrD &epsy, bool init_elastic=true
   );
 
-  // compute stress or energy at "Eps"
+  // stress
   ArrD stress(const ArrD &Eps) const;
+
+  // energy
   ArrD energy(const ArrD &Eps) const;
 
-  // find index of the current yield strain, return yield strain at this index
+  // index of the current yield strain
   ArrS find(const ArrD &Eps) const;
-  ArrD epsy(const ArrS &i  ) const;
 
-  // find the equivalent plastic strain
+  // a certain yield strain
+  ArrD epsy(const ArrS &i) const;
+
+  // equivalent plastic strain
   ArrD epsp(const ArrD &Eps) const;
 
 };

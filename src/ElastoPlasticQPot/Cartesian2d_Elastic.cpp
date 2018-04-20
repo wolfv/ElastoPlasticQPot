@@ -22,6 +22,35 @@ inline Elastic::Elastic(double K, double G) : m_K(K), m_G(G)
 {
 }
 
+// ---------------------------------- equivalent deviator strain -----------------------------------
+
+inline double Elastic::epsd(const T2s &Eps)
+{
+  T2d    I    = cm::identity2<double>();
+  double epsm = Eps.trace()/2.;
+  T2s    Epsd = Eps - epsm*I;
+
+  return std::sqrt(.5*Epsd.ddot(Epsd));
+}
+
+// ----------------------------------- equivalent plastic strain -----------------------------------
+
+inline double Elastic::epsp(const T2s &Eps)
+{
+  UNUSED(Eps);
+
+  return 0.0;
+}
+
+// ----------------------------------- equivalent plastic strain -----------------------------------
+
+inline double Elastic::epsp(double epsd)
+{
+  UNUSED(epsd);
+
+  return 0.0;
+}
+
 // ----------------------------------------- yield stress ------------------------------------------
 
 inline double Elastic::epsy(size_t i) const
@@ -72,11 +101,12 @@ inline double Elastic::energy(const T2s &Eps) const
   T2s    Epsd = Eps - epsm*I;
   double epsd = std::sqrt(.5*Epsd.ddot(Epsd));
 
-  // hydrostatic and deviatoric part of the energy
+  // hydrostatic part of the energy
   double U = m_K * std::pow(epsm,2.);
+  // deviatoric part of the energy
   double V = m_G * std::pow(epsd,2.);
 
-  // return total strain energy
+  // return total energy
   return U + V;
 }
 

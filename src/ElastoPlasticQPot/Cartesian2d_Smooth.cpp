@@ -52,6 +52,33 @@ inline Smooth::Smooth(double K, double G, const std::vector<double> &epsy, bool 
     throw std::runtime_error("Specify at least two yield strains 'epsy'");
 }
 
+// ---------------------------------- equivalent deviator strain -----------------------------------
+
+inline double Smooth::epsd(const T2s &Eps)
+{
+  T2d    I    = cm::identity2<double>();
+  double epsm = Eps.trace()/2.;
+  T2s    Epsd = Eps - epsm*I;
+
+  return std::sqrt(.5*Epsd.ddot(Epsd));
+}
+
+// ----------------------------------- equivalent plastic strain -----------------------------------
+
+inline double Smooth::epsp(const T2s &Eps)
+{
+  return epsp(epsd(Eps));
+}
+
+// ----------------------------------- equivalent plastic strain -----------------------------------
+
+inline double Smooth::epsp(double epsd)
+{
+  size_t i = find(epsd);
+
+  return ( m_epsy[i+1] + m_epsy[i] ) / 2.;
+}
+
 // ----------------------------------------- yield stress ------------------------------------------
 
 inline double Smooth::epsy(size_t i) const
@@ -63,11 +90,7 @@ inline double Smooth::epsy(size_t i) const
 
 inline size_t Smooth::find(const T2s &Eps) const
 {
-  T2d    I    = cm::identity2<double>();
-  double epsm = Eps.trace()/2.;
-  T2s    Epsd = Eps - epsm*I;
-
-  return this->find(std::sqrt(.5*Epsd.ddot(Epsd)));
+  return find(epsd(Eps));
 }
 
 // ------------------------------------- find potential index --------------------------------------
@@ -113,7 +136,7 @@ inline T2s Smooth::stress(const T2s &Eps) const
   T2s    Epsd = Eps - epsm*I;
   double epsd = std::sqrt(.5*Epsd.ddot(Epsd));
 
-  // no deviatoric strain -> return stress tensor with only hydrostatic part
+  // no deviatoric strain -> only hydrostatic stress
   if ( epsd <= 0. ) return (m_K*epsm) * I;
 
   // read current yield strains
@@ -121,7 +144,7 @@ inline T2s Smooth::stress(const T2s &Eps) const
   double eps_min = ( m_epsy[i+1] + m_epsy[i] ) / 2.;
   double deps_y  = ( m_epsy[i+1] - m_epsy[i] ) / 2.;
 
-  // return full strain tensor
+  // return stress tensor
   return (m_K*epsm)*I + ((m_G/epsd)*(deps_y/M_PI)*sin(M_PI/deps_y*(epsd-eps_min)))*Epsd;
 }
 
@@ -135,7 +158,7 @@ inline double Smooth::energy(const T2s &Eps) const
   T2s    Epsd = Eps - epsm*I;
   double epsd = std::sqrt(.5*Epsd.ddot(Epsd));
 
-  // energy for the hydrostatic part
+  // hydrostatic part of the energy
   double U = m_K * std::pow(epsm,2.);
 
   // read current yield strain
