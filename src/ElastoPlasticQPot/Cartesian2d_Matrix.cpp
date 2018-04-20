@@ -394,16 +394,45 @@ inline ArrD Matrix::epsy(const ArrS &mat_idx) const
 
 inline ArrD Matrix::epsp(const ArrD &mat_Eps) const
 {
-  // matrix of yield strain indices
-  ArrS mat_idx = find(mat_Eps);
+  // check input
+  #ifndef NDEBUG
+    // - number of tensor-components
+    assert( mat_Eps.shape(-1) == m_ncomp );
+    // - number of dimensions
+    assert( mat_Eps.ndim()-1 == m_type.ndim() );
+    // - number of indices
+    for ( size_t i = 0 ; i < m_type.ndim() ; ++i )
+      assert( mat_Eps.shape(i) == m_type.shape(i) );
+  #endif
 
-  // matrix of plastic strains
-  ArrD mat_epsp = ( epsy(mat_idx+static_cast<size_t>(1)) + epsy(mat_idx) ) / 2.;
+  // allocate output: matrix of scalars (shape of the input matrix, without index)
+  ArrD mat_epsp(cppmat::del(mat_Eps.shape(),-1));
 
-  // set elastic points to zero
-  for ( size_t i = 0 ; i < m_type.size() ; ++i )
-    if ( m_type[i] == Type::Elastic )
-      mat_epsp[i] = 0.;
+  // iterator to beginning of the matrices containing the strain
+  auto itr_Eps = mat_Eps.begin();
+
+  // start threads (all allocated variables inside this block are local to each thread)
+  #pragma omp parallel
+  {
+    // - temporary tensor
+    T2s Eps;
+
+    // - loop over all points
+    #pragma omp for
+    for ( size_t i = 0 ; i < m_type.size() ; ++i )
+    {
+      // -- copy strain from matrix
+      std::copy(itr_Eps+i*m_ncomp, itr_Eps+(i+1)*m_ncomp, Eps.data());
+      // -- compute plastic strain and store to matrix
+      switch ( m_type[i] )
+      {
+        case Type::Elastic: mat_epsp[i] = m_Elastic[m_index[i]].epsp(Eps); break;
+        case Type::Cusp   : mat_epsp[i] = m_Cusp   [m_index[i]].epsp(Eps); break;
+        case Type::Smooth : mat_epsp[i] = m_Smooth [m_index[i]].epsp(Eps); break;
+        default: std::runtime_error("Unknown material");
+      }
+    }
+  }
 
   return mat_epsp;
 }

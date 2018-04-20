@@ -24,7 +24,7 @@ inline Elastic::Elastic(double K, double G) : m_K(K), m_G(G)
 
 // ---------------------------------- equivalent deviator strain -----------------------------------
 
-inline double Elastic::epsd(const T2s &Eps)
+inline double Elastic::epsd(const T2s &Eps) const
 {
   T2d    I    = cm::identity2<double>();
   double epsm = Eps.trace()/2.;
@@ -35,7 +35,7 @@ inline double Elastic::epsd(const T2s &Eps)
 
 // ----------------------------------- equivalent plastic strain -----------------------------------
 
-inline double Elastic::epsp(const T2s &Eps)
+inline double Elastic::epsp(const T2s &Eps) const
 {
   UNUSED(Eps);
 
@@ -44,7 +44,7 @@ inline double Elastic::epsp(const T2s &Eps)
 
 // ----------------------------------- equivalent plastic strain -----------------------------------
 
-inline double Elastic::epsp(double epsd)
+inline double Elastic::epsp(double epsd) const
 {
   UNUSED(epsd);
 

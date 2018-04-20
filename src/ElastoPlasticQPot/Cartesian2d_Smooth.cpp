@@ -54,7 +54,7 @@ inline Smooth::Smooth(double K, double G, const std::vector<double> &epsy, bool 
 
 // ---------------------------------- equivalent deviator strain -----------------------------------
 
-inline double Smooth::epsd(const T2s &Eps)
+inline double Smooth::epsd(const T2s &Eps) const
 {
   T2d    I    = cm::identity2<double>();
   double epsm = Eps.trace()/2.;
@@ -65,14 +65,14 @@ inline double Smooth::epsd(const T2s &Eps)
 
 // ----------------------------------- equivalent plastic strain -----------------------------------
 
-inline double Smooth::epsp(const T2s &Eps)
+inline double Smooth::epsp(const T2s &Eps) const
 {
   return epsp(epsd(Eps));
 }
 
 // ----------------------------------- equivalent plastic strain -----------------------------------
 
-inline double Smooth::epsp(double epsd)
+inline double Smooth::epsp(double epsd) const
 {
   size_t i = find(epsd);
 

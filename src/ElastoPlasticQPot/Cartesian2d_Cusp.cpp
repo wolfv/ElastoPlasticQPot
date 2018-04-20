@@ -54,7 +54,7 @@ inline Cusp::Cusp(double K, double G, const std::vector<double> &epsy, bool init
 
 // ---------------------------------- equivalent deviator strain -----------------------------------
 
-inline double Cusp::epsd(const T2s &Eps)
+inline double Cusp::epsd(const T2s &Eps) const
 {
   T2d    I    = cm::identity2<double>();
   double epsm = Eps.trace()/2.;
@@ -65,14 +65,14 @@ inline double Cusp::epsd(const T2s &Eps)
 
 // ----------------------------------- equivalent plastic strain -----------------------------------
 
-inline double Cusp::epsp(const T2s &Eps)
+inline double Cusp::epsp(const T2s &Eps) const
 {
   return epsp(epsd(Eps));
 }
 
 // ----------------------------------- equivalent plastic strain -----------------------------------
 
-inline double Cusp::epsp(double epsd)
+inline double Cusp::epsp(double epsd) const
 {
   size_t i = find(epsd);
 
