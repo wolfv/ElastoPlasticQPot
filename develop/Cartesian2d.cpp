@@ -1,6 +1,8 @@
 
 #include <catch/catch.hpp>
 
+#define EQ(a,b) REQUIRE_THAT( (a), Catch::WithinAbs((b), 1.e-12) );
+
 #include <ElastoPlasticQPot/ElastoPlasticQPot.h>
 
 namespace GMat = ElastoPlasticQPot::Cartesian2d;
@@ -9,10 +11,6 @@ namespace GMat = ElastoPlasticQPot::Cartesian2d;
 
 TEST_CASE("ElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
 {
-
-// =================================================================================================
-
-#define EQ(a,b) REQUIRE_THAT( (a), Catch::WithinAbs((b), 1.e-12) );
 
 // =================================================================================================
 
