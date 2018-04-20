@@ -48,6 +48,7 @@ class Elastic
 {
 private:
 
+  // parameters
   double m_K; // bulk  modulus
   double m_G; // shear modulus
 
@@ -84,6 +85,7 @@ class Cusp
 {
 private:
 
+  // parameters
   double              m_K;    // bulk  modulus
   double              m_G;    // shear modulus
   std::vector<double> m_epsy; // yield strains
@@ -121,6 +123,7 @@ class Smooth
 {
 private:
 
+  // parameters
   double              m_K;    // bulk  modulus
   double              m_G;    // shear modulus
   std::vector<double> m_epsy; // yield strains

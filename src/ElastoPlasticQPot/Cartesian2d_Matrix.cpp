@@ -67,11 +67,10 @@ inline ArrD epsd(const ArrD &mat_Eps)
   // start threads (all allocated variables inside this block are local to each thread)
   #pragma omp parallel
   {
-    // - temporary tensors/scalars
-    double epsm;
-    vT2s   Eps;
-    T2s    Epsd;
-    T2d    I = cm::identity2<double>();
+    // - temporary tensors
+    vT2s Eps;
+    T2s  Epsd;
+    T2d  I = cm::identity2<double>();
 
     // - loop over all points
     #pragma omp for
@@ -80,8 +79,7 @@ inline ArrD epsd(const ArrD &mat_Eps)
       // -- map from matrix of strains
       Eps.map(&mat_Eps[i*ncomp]);
       // -- compute the strain deviator
-      epsm = Eps.trace()/2.;
-      Epsd = Eps - epsm*I;
+      Epsd = Eps - Eps.trace()/2. * I;
       // -- compute the equivalent strain deviator
       mat_epsd[i] = std::sqrt(.5*Epsd.ddot(Epsd));
     }
