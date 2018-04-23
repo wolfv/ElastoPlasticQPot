@@ -56,7 +56,7 @@ inline Cusp::Cusp(double K, double G, const std::vector<double> &epsy, bool init
 
 inline double Cusp::epsd(const T2s &Eps) const
 {
-  T2s Epsd = Eps - Eps.trace()/2. * cppmat::cartesian2d::identity2<double>();
+  T2s Epsd = Eps - Eps.trace()/2. * T2d::I();
 
   return std::sqrt(.5*Epsd.ddot(Epsd));
 }
@@ -129,9 +129,9 @@ inline size_t Cusp::find(double epsd) const
 inline T2s Cusp::stress(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
-  T2d    I    = cm::identity2<double>();
+  T2d    I    = T2d::I();
   double epsm = Eps.trace()/2.;
-  T2s    Epsd = Eps - epsm*I;
+  T2s    Epsd = Eps - epsm * I;
   double epsd = std::sqrt(.5*Epsd.ddot(Epsd));
 
   // no deviatoric strain -> only hydrostatic stress
@@ -142,7 +142,7 @@ inline T2s Cusp::stress(const T2s &Eps) const
   double eps_min = ( m_epsy[i+1] + m_epsy[i] ) / 2.;
 
   // return stress tensor
-  return (m_K*epsm)*I + ( m_G * (1.-eps_min/epsd) ) * Epsd;
+  return (m_K*epsm) * I + ( m_G * (1.-eps_min/epsd) ) * Epsd;
 }
 
 // -------------------------------------------- energy ---------------------------------------------
@@ -150,9 +150,8 @@ inline T2s Cusp::stress(const T2s &Eps) const
 inline double Cusp::energy(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
-  T2d    I    = cm::identity2<double>();
   double epsm = Eps.trace()/2.;
-  T2s    Epsd = Eps - epsm*I;
+  T2s    Epsd = Eps - epsm * T2d::I();
   double epsd = std::sqrt(.5*Epsd.ddot(Epsd));
 
   // hydrostatic part of the energy

@@ -56,7 +56,7 @@ inline Smooth::Smooth(double K, double G, const std::vector<double> &epsy, bool 
 
 inline double Smooth::epsd(const T2s &Eps) const
 {
-  T2s Epsd = Eps - Eps.trace()/2. * cppmat::cartesian2d::identity2<double>();
+  T2s Epsd = Eps - Eps.trace()/2. * T2d::I();
 
   return std::sqrt(.5*Epsd.ddot(Epsd));
 }
@@ -129,7 +129,7 @@ inline size_t Smooth::find(double epsd) const
 inline T2s Smooth::stress(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
-  T2d    I    = cm::identity2<double>();
+  T2d    I    = T2d::I();
   double epsm = Eps.trace()/2.;
   T2s    Epsd = Eps - epsm*I;
   double epsd = std::sqrt(.5*Epsd.ddot(Epsd));
@@ -151,7 +151,7 @@ inline T2s Smooth::stress(const T2s &Eps) const
 inline double Smooth::energy(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
-  T2d    I    = cm::identity2<double>();
+  T2d    I    = T2d::I();
   double epsm = Eps.trace()/2.;
   T2s    Epsd = Eps - epsm*I;
   double epsd = std::sqrt(.5*Epsd.ddot(Epsd));

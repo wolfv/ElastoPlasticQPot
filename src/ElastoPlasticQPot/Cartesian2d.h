@@ -18,8 +18,6 @@ namespace Cartesian2d {
 
 // --------------------------------------------- alias ---------------------------------------------
 
-namespace cm = cppmat::cartesian2d;
-
 typedef cppmat::cartesian2d::tensor2 <double> T2;
 typedef cppmat::cartesian2d::tensor2s<double> T2s;
 typedef cppmat::cartesian2d::tensor2d<double> T2d;

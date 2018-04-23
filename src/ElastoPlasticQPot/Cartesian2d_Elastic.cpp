@@ -26,7 +26,7 @@ inline Elastic::Elastic(double K, double G) : m_K(K), m_G(G)
 
 inline double Elastic::epsd(const T2s &Eps) const
 {
-  T2s Epsd = Eps - Eps.trace()/2. * cppmat::cartesian2d::identity2<double>();
+  T2s Epsd = Eps - Eps.trace()/2. * T2d::I();
 
   return std::sqrt(.5*Epsd.ddot(Epsd));
 }
@@ -81,9 +81,9 @@ inline size_t Elastic::find(double epsd) const
 inline T2s Elastic::stress(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
-  T2d    I    = cm::identity2<double>();
+  T2d    I    = T2d::I();
   double epsm = Eps.trace()/2.;
-  T2s    Epsd = Eps - epsm*I;
+  T2s    Epsd = Eps - epsm * I;
 
   // return stress tensor
   return ( m_K * epsm ) * I + m_G * Epsd;
@@ -94,9 +94,8 @@ inline T2s Elastic::stress(const T2s &Eps) const
 inline double Elastic::energy(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
-  T2d    I    = cm::identity2<double>();
   double epsm = Eps.trace()/2.;
-  T2s    Epsd = Eps - epsm*I;
+  T2s    Epsd = Eps - epsm * T2d::I();
   double epsd = std::sqrt(.5*Epsd.ddot(Epsd));
 
   // hydrostatic part of the energy

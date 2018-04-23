@@ -27,7 +27,7 @@ inline double epsm(const T2s &Eps)
 
 inline double epsd(const T2s &Eps)
 {
-  T2s Epsd = Eps - Eps.trace()/2. * cppmat::cartesian2d::identity2<double>();
+  T2s Epsd = Eps - Eps.trace()/2. * T2d::I();
 
   return std::sqrt(.5*Epsd.ddot(Epsd));
 }

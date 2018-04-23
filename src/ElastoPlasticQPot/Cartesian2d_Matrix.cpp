@@ -33,16 +33,13 @@ inline ArrD epsm(const ArrD &mat_Eps)
   // start threads (all allocated variables inside this block are local to each thread)
   #pragma omp parallel
   {
-    // - temporary tensor
-    vT2s Eps;
-
-    // - loop over all points
+    // loop over all points
     #pragma omp for
     for ( size_t i = 0 ; i < mat_epsm.size() ; ++i )
     {
-      // -- map from matrix of strains
-      Eps.map(&mat_Eps[i*ncomp]);
-      // -- compute the mean strain
+      // map from matrix of strains
+      vT2s Eps = vT2s::Map(&mat_Eps[i*ncomp]);
+      // compute the mean strain
       mat_epsm[i] = Eps.trace()/2.;
     }
   }
@@ -67,20 +64,15 @@ inline ArrD epsd(const ArrD &mat_Eps)
   // start threads (all allocated variables inside this block are local to each thread)
   #pragma omp parallel
   {
-    // - temporary tensors
-    vT2s Eps;
-    T2s  Epsd;
-    T2d  I = cm::identity2<double>();
-
-    // - loop over all points
+    // loop over all points
     #pragma omp for
     for ( size_t i = 0 ; i < mat_epsd.size() ; ++i )
     {
-      // -- map from matrix of strains
-      Eps.map(&mat_Eps[i*ncomp]);
-      // -- compute the strain deviator
-      Epsd = Eps - Eps.trace()/2. * I;
-      // -- compute the equivalent strain deviator
+      // map from matrix of strains
+      vT2s Eps  = vT2s::Map(&mat_Eps[i*ncomp]);
+      // compute the strain deviator
+      T2s  Epsd = Eps - Eps.trace()/2. * T2d::I();
+      // compute the equivalent strain deviator
       mat_epsd[i] = std::sqrt(.5*Epsd.ddot(Epsd));
     }
   }
@@ -132,12 +124,12 @@ inline void Matrix::addElastic(
   // loop over entries
   for ( size_t i = 0 ; i < rows ; ++i )
   {
-    // - check
+    // check
     assert( m_type.at(index.item(i), index.item(i)+cols) == Type::Unset );
-    // - set type and position in material vector
+    // set type and position in material vector
     m_type .at(index.item(i), index.item(i)+cols) = Type::Elastic;
     m_index.at(index.item(i), index.item(i)+cols) = m_Elastic.size();
-    // - store material definition
+    // store material definition
     m_Elastic.push_back(Elastic(K[i], G[i]));
   }
 }
@@ -165,14 +157,14 @@ inline void Matrix::addCusp(
   // loop over entries
   for ( size_t i = 0 ; i < rows ; ++i )
   {
-    // - check
+    // check
     assert( m_type.at(index.item(i), index.item(i)+cols) == Type::Unset );
-    // - set type and position in material vector
+    // set type and position in material vector
     m_type .at(index.item(i), index.item(i)+cols) = Type::Cusp;
     m_index.at(index.item(i), index.item(i)+cols) = m_Cusp.size();
-    // - get yield strains
+    // get yield strains
     std::vector<double> y(epsy.item(i), epsy.item(i)+ny);
-    // - store material definition
+    // store material definition
     m_Cusp.push_back(Cusp(K[i], G[i], y, init_elastic));
   }
 }
@@ -200,14 +192,14 @@ inline void Matrix::addSmooth(
   // loop over entries
   for ( size_t i = 0 ; i < rows ; ++i )
   {
-    // - check
+    // check
     assert( m_type.at(index.item(i), index.item(i)+cols) == Type::Unset );
-    // - set type and position in material vector
+    // set type and position in material vector
     m_type .at(index.item(i), index.item(i)+cols) = Type::Smooth;
     m_index.at(index.item(i), index.item(i)+cols) = m_Smooth.size();
-    // - get yield strains
+    // get yield strains
     std::vector<double> y(epsy.item(i), epsy.item(i)+ny);
-    // - store material definition
+    // store material definition
     m_Smooth.push_back(Smooth(K[i], G[i], y, init_elastic));
   }
 }
@@ -218,11 +210,11 @@ inline ArrD Matrix::stress(const ArrD &mat_Eps) const
 {
   // check input
   #ifndef NDEBUG
-    // - number of tensor-components
+    // number of tensor-components
     assert( mat_Eps.shape(-1) == m_ncomp );
-    // - number of dimensions
+    // number of dimensions
     assert( mat_Eps.ndim()-1 == m_type.ndim() );
-    // - number of indices
+    // number of indices
     for ( size_t i = 0 ; i < m_type.ndim() ; ++i )
       assert( mat_Eps.shape(i) == m_type.shape(i) );
   #endif
@@ -237,16 +229,15 @@ inline ArrD Matrix::stress(const ArrD &mat_Eps) const
   // start threads (all allocated variables inside this block are local to each thread)
   #pragma omp parallel
   {
-    // - temporary tensors
+    // temporary tensors
     T2s Sig, Eps;
-
-    // - loop over all points
+    // loop over all points
     #pragma omp for
     for ( size_t i = 0 ; i < m_type.size() ; ++i )
     {
-      // -- copy strain from matrix
+      // copy strain from matrix
       std::copy(itr_Eps+i*m_ncomp, itr_Eps+(i+1)*m_ncomp, Eps.data());
-      // -- compute stress
+      // compute stress
       switch ( m_type[i] )
       {
         case Type::Elastic: Sig = m_Elastic[m_index[i]].stress(Eps); break;
@@ -254,7 +245,7 @@ inline ArrD Matrix::stress(const ArrD &mat_Eps) const
         case Type::Smooth : Sig = m_Smooth [m_index[i]].stress(Eps); break;
         default: std::runtime_error("Unknown material");
       }
-      // -- store stress to matrix
+      // store stress to matrix
       std::copy(Sig.begin(), Sig.end(), itr_Sig+i*m_ncomp);
     }
   }
@@ -268,11 +259,11 @@ inline ArrD Matrix::energy(const ArrD &mat_Eps) const
 {
   // check input
   #ifndef NDEBUG
-    // - number of tensor-components
+    // number of tensor-components
     assert( mat_Eps.shape(-1) == m_ncomp );
-    // - number of dimensions
+    // number of dimensions
     assert( mat_Eps.ndim()-1 == m_type.ndim() );
-    // - number of indices
+    // number of indices
     for ( size_t i = 0 ; i < m_type.ndim() ; ++i )
       assert( mat_Eps.shape(i) == m_type.shape(i) );
   #endif
@@ -286,16 +277,13 @@ inline ArrD Matrix::energy(const ArrD &mat_Eps) const
   // start threads (all allocated variables inside this block are local to each thread)
   #pragma omp parallel
   {
-    // - temporary tensor
-    T2s Eps;
-
-    // - loop over all points
+    // loop over all points
     #pragma omp for
     for ( size_t i = 0 ; i < m_type.size() ; ++i )
     {
-      // -- copy strain from matrix
-      std::copy(itr_Eps+i*m_ncomp, itr_Eps+(i+1)*m_ncomp, Eps.data());
-      // -- compute energy and store to matrix
+      // copy strain from matrix
+      T2s Eps = T2s::Copy(itr_Eps+i*m_ncomp, itr_Eps+(i+1)*m_ncomp);
+      // compute energy and store to matrix
       switch ( m_type[i] )
       {
         case Type::Elastic: mat_energy[i] = m_Elastic[m_index[i]].energy(Eps); break;
@@ -315,11 +303,11 @@ inline ArrS Matrix::find(const ArrD &mat_Eps) const
 {
   // check input
   #ifndef NDEBUG
-    // - number of tensor-components
+    // number of tensor-components
     assert( mat_Eps.shape(-1) == m_ncomp );
-    // - number of dimensions
+    // number of dimensions
     assert( mat_Eps.ndim()-1 == m_type.ndim() );
-    // - number of indices
+    // number of indices
     for ( size_t i = 0 ; i < m_type.ndim() ; ++i )
       assert( mat_Eps.shape(i) == m_type.shape(i) );
   #endif
@@ -333,16 +321,13 @@ inline ArrS Matrix::find(const ArrD &mat_Eps) const
   // start threads (all allocated variables inside this block are local to each thread)
   #pragma omp parallel
   {
-    // - temporary tensor
-    T2s Eps;
-
-    // - loop over all points
+    // loop over all points
     #pragma omp for
     for ( size_t i = 0 ; i < m_type.size() ; ++i )
     {
-      // -- copy strain from matrix
-      std::copy(itr_Eps+i*m_ncomp, itr_Eps+(i+1)*m_ncomp, Eps.data());
-      // -- find index and store to matrix
+      // copy strain from matrix
+      T2s Eps = T2s::Copy(itr_Eps+i*m_ncomp, itr_Eps+(i+1)*m_ncomp);
+      // find index and store to matrix
       switch ( m_type[i] )
       {
         case Type::Elastic: mat_idx[i] = m_Elastic[m_index[i]].find(Eps); break;
@@ -362,9 +347,9 @@ inline ArrD Matrix::epsy(const ArrS &mat_idx) const
 {
   // check input
   #ifndef NDEBUG
-    // - number of dimensions
+    // number of dimensions
     assert( mat_idx.ndim() == m_type.ndim() );
-    // - number of indices
+    // number of indices
     for ( size_t i = 0 ; i < m_type.ndim() ; ++i )
       assert( mat_idx.shape(i) == m_type.shape(i) );
   #endif
@@ -394,11 +379,11 @@ inline ArrD Matrix::epsp(const ArrD &mat_Eps) const
 {
   // check input
   #ifndef NDEBUG
-    // - number of tensor-components
+    // number of tensor-components
     assert( mat_Eps.shape(-1) == m_ncomp );
-    // - number of dimensions
+    // number of dimensions
     assert( mat_Eps.ndim()-1 == m_type.ndim() );
-    // - number of indices
+    // number of indices
     for ( size_t i = 0 ; i < m_type.ndim() ; ++i )
       assert( mat_Eps.shape(i) == m_type.shape(i) );
   #endif
@@ -412,16 +397,13 @@ inline ArrD Matrix::epsp(const ArrD &mat_Eps) const
   // start threads (all allocated variables inside this block are local to each thread)
   #pragma omp parallel
   {
-    // - temporary tensor
-    T2s Eps;
-
-    // - loop over all points
+    // loop over all points
     #pragma omp for
     for ( size_t i = 0 ; i < m_type.size() ; ++i )
     {
-      // -- copy strain from matrix
-      std::copy(itr_Eps+i*m_ncomp, itr_Eps+(i+1)*m_ncomp, Eps.data());
-      // -- compute plastic strain and store to matrix
+      // copy strain from matrix
+      T2s Eps = T2s::Copy(itr_Eps+i*m_ncomp, itr_Eps+(i+1)*m_ncomp);
+      // compute plastic strain and store to matrix
       switch ( m_type[i] )
       {
         case Type::Elastic: mat_epsp[i] = m_Elastic[m_index[i]].epsp(Eps); break;

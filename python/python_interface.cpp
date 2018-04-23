@@ -65,7 +65,9 @@ py::class_<SM::Elastic>(sm, "Elastic")
   // methods
   .def("stress", &SM::Elastic::stress)
   .def("energy", &SM::Elastic::energy)
-  .def("eps_y" , &SM::Elastic::eps_y )
+  .def("epsy"  , &SM::Elastic::epsy  )
+  .def("epsp"  , py::overload_cast<const T2s &>(&SM::Elastic::epsp, py::const_))
+  .def("epsp"  , py::overload_cast<double     >(&SM::Elastic::epsp, py::const_))
   .def("find"  , py::overload_cast<const T2s &>(&SM::Elastic::find, py::const_))
   .def("find"  , py::overload_cast<double     >(&SM::Elastic::find, py::const_))
   // print to screen
@@ -87,7 +89,9 @@ py::class_<SM::Cusp>(sm, "Cusp")
   // methods
   .def("stress", &SM::Cusp::stress)
   .def("energy", &SM::Cusp::energy)
-  .def("eps_y" , &SM::Cusp::eps_y )
+  .def("epsy"  , &SM::Cusp::epsy  )
+  .def("epsp"  , py::overload_cast<const T2s &>(&SM::Cusp::epsp, py::const_))
+  .def("epsp"  , py::overload_cast<double     >(&SM::Cusp::epsp, py::const_))
   .def("find"  , py::overload_cast<const T2s &>(&SM::Cusp::find, py::const_))
   .def("find"  , py::overload_cast<double     >(&SM::Cusp::find, py::const_))
   // print to screen
@@ -109,7 +113,9 @@ py::class_<SM::Smooth>(sm, "Smooth")
   // methods
   .def("stress", &SM::Smooth::stress)
   .def("energy", &SM::Smooth::energy)
-  .def("eps_y" , &SM::Smooth::eps_y )
+  .def("epsy"  , &SM::Smooth::epsy  )
+  .def("epsp"  , py::overload_cast<const T2s &>(&SM::Smooth::epsp, py::const_))
+  .def("epsp"  , py::overload_cast<double     >(&SM::Smooth::epsp, py::const_))
   .def("find"  , py::overload_cast<const T2s &>(&SM::Smooth::find, py::const_))
   .def("find"  , py::overload_cast<double     >(&SM::Smooth::find, py::const_))
   // print to screen
@@ -118,7 +124,9 @@ py::class_<SM::Smooth>(sm, "Smooth")
 
 // -------------------------------------------------------------------------------------------------
 
-py::enum_<SM::Type::Value>(sm, "Type")
+py::module smm = sm.def_submodule("Type", "Type enumerator");
+
+py::enum_<SM::Type::Value>(smm, "Type")
     .value("Unset"       , SM::Type::Unset)
     .value("Elastic"     , SM::Type::Elastic)
     .value("Cusp"        , SM::Type::Cusp)
@@ -137,14 +145,15 @@ py::class_<SM::Matrix>(sm, "Matrix")
     py::arg("shape")
   )
   // methods
-  .def("addElastic", &SM::Matrix::addElastic)
-  .def("addCusp"   , &SM::Matrix::addCusp)
-  .def("addSmooth" , &SM::Matrix::addSmooth)
+  .def("addElastic", &SM::Matrix::addElastic,py::arg("index"),py::arg("K"),py::arg("G"))
+  .def("addCusp"   , &SM::Matrix::addCusp   ,py::arg("index"),py::arg("K"),py::arg("G"),py::arg("epsy"),py::arg("init_elastic")=true)
+  .def("addSmooth" , &SM::Matrix::addSmooth ,py::arg("index"),py::arg("K"),py::arg("G"),py::arg("epsy"),py::arg("init_elastic")=true)
   .def("type"      , &SM::Matrix::type)
   .def("stress"    , &SM::Matrix::stress)
   .def("energy"    , &SM::Matrix::energy)
+  .def("epsy"      , &SM::Matrix::epsy)
+  .def("epsp"      , &SM::Matrix::epsp)
   .def("find"      , &SM::Matrix::find)
-  .def("eps_y"     , &SM::Matrix::eps_y)
   // print to screen
   .def("__repr__", [](const SM::Matrix &a){
     return "<ElastoPlasticQPot.Cartesian2d.Matrix>"; });
