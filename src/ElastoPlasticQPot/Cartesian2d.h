@@ -194,16 +194,30 @@ public:
   // return type
   ArrS type() const;
 
-  // add material definitions
-  void addElastic(const ArrS &index, const ArrD &K, const ArrD &G);
+  // check that a type has been set everywhere
+  void check() const;
+
+  // set material definition for a batch of points
+  // -
+  void setElastic(
+    const ArrS &I, double K, double G);
+  // -
+  void setCusp(
+    const ArrS &I, double K, double G, const std::vector<double> &epsy, bool init_elastic=true);
+  // -
+  void setSmooth(
+    const ArrS &I, double K, double G, const std::vector<double> &epsy, bool init_elastic=true);
+
+  // add material definition, specified per point
+  // -
+  void addElastic(
+    const MatS &index, const ColD &K, const ColD &G);
   // -
   void addCusp(
-    const ArrS &index, const ArrD &K, const ArrD &G, const ArrD &epsy, bool init_elastic=true
-  );
+    const MatS &index, const ColD &K, const ColD &G, const MatD &epsy, bool init_elastic=true);
   // -
   void addSmooth(
-    const ArrS &index, const ArrD &K, const ArrD &G, const ArrD &epsy, bool init_elastic=true
-  );
+    const MatS &index, const ColD &K, const ColD &G, const MatD &epsy, bool init_elastic=true);
 
   // stress
   ArrD stress(const ArrD &Eps) const;

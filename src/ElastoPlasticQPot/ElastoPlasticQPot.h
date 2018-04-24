@@ -43,9 +43,12 @@
 
 namespace ElastoPlasticQPot {
 
-typedef cppmat::matrix<size_t> ArrS;
-typedef cppmat::matrix<double> ArrD;
-
+typedef cppmat::matrix <size_t> ArrS;
+typedef cppmat::matrix <double> ArrD;
+typedef cppmat::matrix2<size_t> MatS;
+typedef cppmat::matrix2<double> MatD;
+typedef cppmat::vector <size_t> ColS;
+typedef cppmat::vector <double> ColD;
 }
 
 // ---------------------------------------- include headers ----------------------------------------

@@ -121,9 +121,9 @@ SECTION( "Matrix" )
 
   // row 0: elastic
   {
-    cppmat::matrix<size_t> index({2,2});
-    cppmat::matrix<double> k    ({2  });
-    cppmat::matrix<double> g    ({2  });
+    cppmat::matrix2<size_t> index(2,2);
+    cppmat::vector <double> k    (2  );
+    cppmat::vector <double> g    (2  );
 
     k.setConstant(K);
     g.setConstant(G);
@@ -136,10 +136,10 @@ SECTION( "Matrix" )
 
   // row 1: cups
   {
-    cppmat::matrix<size_t> index({2,2});
-    cppmat::matrix<double> k    ({2  });
-    cppmat::matrix<double> g    ({2  });
-    cppmat::matrix<double> epsy ({2,3});
+    cppmat::matrix2<size_t> index(2,2);
+    cppmat::vector <double> k    (2  );
+    cppmat::vector <double> g    (2  );
+    cppmat::matrix2<double> epsy (2,3);
 
     k.setConstant(K);
     g.setConstant(G);
@@ -155,10 +155,10 @@ SECTION( "Matrix" )
 
   // row 2: smooth
   {
-    cppmat::matrix<size_t> index({2,2});
-    cppmat::matrix<double> k    ({2  });
-    cppmat::matrix<double> g    ({2  });
-    cppmat::matrix<double> epsy ({2,3});
+    cppmat::matrix2<size_t> index(2,2);
+    cppmat::vector <double> k    (2  );
+    cppmat::vector <double> g    (2  );
+    cppmat::matrix2<double> epsy (2,3);
 
     k.setConstant(K);
     g.setConstant(G);

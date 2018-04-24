@@ -104,31 +104,120 @@ inline ArrS Matrix::type() const
   return m_type;
 }
 
+// --------------------------- check that a type has been set everywhere ---------------------------
+
+inline void Matrix::check() const
+{
+  for ( size_t i = 0 ; i < m_type.size() ; ++i )
+    if ( m_type[i] == Type::Unset )
+      throw std::runtime_error("No type set for: " + cppmat::to_string(m_type.decompress(i)));
+}
+
+// ---------------------------------- set Elastic material points ----------------------------------
+
+inline void Matrix::setElastic(
+  const ArrS &I, double K, double G)
+{
+  // check input
+  #ifndef NDEBUG
+    // - number of dimensions
+    assert( I.ndim() == m_type.ndim() );
+    // - each shape
+    for ( size_t i = 0 ; i < m_type.ndim() ; ++i )
+      assert( I.shape(i) == m_type(i) );
+    // - empty material definitions
+    for ( size_t i = 0 ; i < m_type.size() ; ++i )
+      if ( I[i] )
+        assert( m_type[i] == Type::Unset );
+  #endif
+
+  // set type and position in material vector
+  for ( size_t i = 0 ; i < m_type.size() ; ++i ) {
+    if ( I[i] ) {
+      m_type [i] = Type::Elastic;
+      m_index[i] = m_Elastic.size();
+    }
+  }
+  // store material definition
+  m_Elastic.push_back(Elastic(K, G));
+}
+
+// ----------------------------------- set Cusp material points ------------------------------------
+
+inline void Matrix::setCusp(
+  const ArrS &I, double K, double G, const std::vector<double> &epsy, bool init_elastic)
+{
+  // check input
+  #ifndef NDEBUG
+    // - number of dimensions
+    assert( I.ndim() == m_type.ndim() );
+    // - each shape
+    for ( size_t i = 0 ; i < m_type.ndim() ; ++i )
+      assert( I.shape(i) == m_type(i) );
+    // - empty material definitions
+    for ( size_t i = 0 ; i < m_type.size() ; ++i )
+      if ( I[i] )
+        assert( m_type[i] == Type::Unset );
+  #endif
+
+  // set type and position in material vector
+  for ( size_t i = 0 ; i < m_type.size() ; ++i ) {
+    if ( I[i] ) {
+      m_type [i] = Type::Cusp;
+      m_index[i] = m_Cusp.size();
+    }
+  }
+  // store material definition
+  m_Cusp.push_back(Cusp(K, G, epsy, init_elastic));
+}
+
+// ---------------------------------- set Smooth material points -----------------------------------
+
+inline void Matrix::setSmooth(
+  const ArrS &I, double K, double G, const std::vector<double> &epsy, bool init_elastic)
+{
+  // check input
+  #ifndef NDEBUG
+    // - number of dimensions
+    assert( I.ndim() == m_type.ndim() );
+    // - each shape
+    for ( size_t i = 0 ; i < m_type.ndim() ; ++i )
+      assert( I.shape(i) == m_type(i) );
+    // - empty material definitions
+    for ( size_t i = 0 ; i < m_type.size() ; ++i )
+      if ( I[i] )
+        assert( m_type[i] == Type::Unset );
+  #endif
+
+  // set type and position in material vector
+  for ( size_t i = 0 ; i < m_type.size() ; ++i ) {
+    if ( I[i] ) {
+      m_type [i] = Type::Smooth;
+      m_index[i] = m_Smooth.size();
+    }
+  }
+  // store material definition
+  m_Smooth.push_back(Smooth(K, G, epsy, init_elastic));
+}
+
 // ---------------------------------- add Elastic material points ----------------------------------
 
 inline void Matrix::addElastic(
-  const ArrS &index, const ArrD &K, const ArrD &G)
+  const MatS &index, const ColD &K, const ColD &G)
 {
   // check input
-  assert( index.ndim()   == 2              );
-  assert( index.shape(1) == m_type.ndim()  );
-  assert( K.ndim()       == 1              );
-  assert( K.size()       == index.shape(0) );
-  assert( G.ndim()       == 1              );
-  assert( G.size()       == index.shape(0) );
-
-  // number of entries, number matrix dimensions
-  size_t rows = index.shape(0);
-  size_t cols = index.shape(1);
+  assert( index.cols() == m_type.ndim() );
+  assert( index.rows() == K.size()      );
+  assert( index.rows() == G.size()      );
 
   // loop over entries
-  for ( size_t i = 0 ; i < rows ; ++i )
+  for ( size_t i = 0 ; i < index.rows() ; ++i )
   {
     // check
-    assert( m_type.at(index.item(i), index.item(i)+cols) == Type::Unset );
+    assert( m_type.at(index.beginRow(i), index.endRow(i)) == Type::Unset );
     // set type and position in material vector
-    m_type .at(index.item(i), index.item(i)+cols) = Type::Elastic;
-    m_index.at(index.item(i), index.item(i)+cols) = m_Elastic.size();
+    m_type .at(index.beginRow(i), index.endRow(i)) = Type::Elastic;
+    m_index.at(index.beginRow(i), index.endRow(i)) = m_Elastic.size();
     // store material definition
     m_Elastic.push_back(Elastic(K[i], G[i]));
   }
@@ -137,33 +226,24 @@ inline void Matrix::addElastic(
 // ----------------------------------- add Cusp material points ------------------------------------
 
 inline void Matrix::addCusp(
-  const ArrS &index, const ArrD &K, const ArrD &G, const ArrD &epsy, bool init_elastic)
+  const MatS &index, const ColD &K, const ColD &G, const MatD &epsy, bool init_elastic)
 {
   // check input
-  assert( index.ndim()   == 2              );
-  assert( index.shape(1) == m_type.ndim()  );
-  assert( K.ndim()       == 1              );
-  assert( K.size()       == index.shape(0) );
-  assert( G.ndim()       == 1              );
-  assert( G.size()       == index.shape(0) );
-  assert( epsy.ndim()    == 2              );
-  assert( epsy.shape(0)  == index.shape(0) );
-
-  // number of entries, number matrix dimensions, number of yield strains per entry
-  size_t rows = index.shape(0);
-  size_t cols = index.shape(1);
-  size_t ny   = epsy .shape(1);
+  assert( index.cols() == m_type.ndim() );
+  assert( index.rows() == K.size()      );
+  assert( index.rows() == G.size()      );
+  assert( index.rows() == index.rows()  );
 
   // loop over entries
-  for ( size_t i = 0 ; i < rows ; ++i )
+  for ( size_t i = 0 ; i < index.rows() ; ++i )
   {
     // check
-    assert( m_type.at(index.item(i), index.item(i)+cols) == Type::Unset );
+    assert( m_type.at(index.beginRow(i), index.endRow(i)) == Type::Unset );
     // set type and position in material vector
-    m_type .at(index.item(i), index.item(i)+cols) = Type::Cusp;
-    m_index.at(index.item(i), index.item(i)+cols) = m_Cusp.size();
+    m_type .at(index.beginRow(i), index.endRow(i)) = Type::Cusp;
+    m_index.at(index.beginRow(i), index.endRow(i)) = m_Cusp.size();
     // get yield strains
-    std::vector<double> y(epsy.item(i), epsy.item(i)+ny);
+    std::vector<double> y(epsy.item(i), epsy.item(i)+epsy.cols());
     // store material definition
     m_Cusp.push_back(Cusp(K[i], G[i], y, init_elastic));
   }
@@ -172,33 +252,24 @@ inline void Matrix::addCusp(
 // ---------------------------------- add Smooth material points -----------------------------------
 
 inline void Matrix::addSmooth(
-  const ArrS &index, const ArrD &K, const ArrD &G, const ArrD &epsy, bool init_elastic)
+  const MatS &index, const ColD &K, const ColD &G, const MatD &epsy, bool init_elastic)
 {
   // check input
-  assert( index.ndim()   == 2              );
-  assert( index.shape(1) == m_type.ndim()  );
-  assert( K.ndim()       == 1              );
-  assert( K.size()       == index.shape(0) );
-  assert( G.ndim()       == 1              );
-  assert( G.size()       == index.shape(0) );
-  assert( epsy.ndim()    == 2              );
-  assert( epsy.shape(0)  == index.shape(0) );
-
-  // number of entries, number matrix dimensions, number of yield strains per entry
-  size_t rows = index.shape(0);
-  size_t cols = index.shape(1);
-  size_t ny   = epsy .shape(1);
+  assert( index.cols() == m_type.ndim() );
+  assert( index.rows() == K.size()      );
+  assert( index.rows() == G.size()      );
+  assert( index.rows() == index.rows()  );
 
   // loop over entries
-  for ( size_t i = 0 ; i < rows ; ++i )
+  for ( size_t i = 0 ; i < index.rows() ; ++i )
   {
     // check
-    assert( m_type.at(index.item(i), index.item(i)+cols) == Type::Unset );
+    assert( m_type.at(index.beginRow(i), index.endRow(i)) == Type::Unset );
     // set type and position in material vector
-    m_type .at(index.item(i), index.item(i)+cols) = Type::Smooth;
-    m_index.at(index.item(i), index.item(i)+cols) = m_Smooth.size();
+    m_type .at(index.beginRow(i), index.endRow(i)) = Type::Smooth;
+    m_index.at(index.beginRow(i), index.endRow(i)) = m_Smooth.size();
     // get yield strains
-    std::vector<double> y(epsy.item(i), epsy.item(i)+ny);
+    std::vector<double> y(epsy.item(i), epsy.item(i)+epsy.cols());
     // store material definition
     m_Smooth.push_back(Smooth(K[i], G[i], y, init_elastic));
   }
