@@ -126,7 +126,7 @@ inline size_t Smooth::find(double epsd) const
 
 // -------------------------------------------- stress ---------------------------------------------
 
-inline T2s Smooth::stress(const T2s &Eps) const
+inline T2s Smooth::Sig(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
   T2d    I    = T2d::I();

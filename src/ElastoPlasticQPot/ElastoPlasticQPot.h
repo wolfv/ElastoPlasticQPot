@@ -39,18 +39,6 @@
    ELASTOPLASTICQPOT_MAJOR_VERSION==y && \
    ELASTOPLASTICQPOT_MINOR_VERSION==z)
 
-// ------------------------------------------ alias types ------------------------------------------
-
-namespace ElastoPlasticQPot {
-
-typedef cppmat::matrix <size_t> ArrS;
-typedef cppmat::matrix <double> ArrD;
-typedef cppmat::matrix2<size_t> MatS;
-typedef cppmat::matrix2<double> MatD;
-typedef cppmat::vector <size_t> ColS;
-typedef cppmat::vector <double> ColD;
-}
-
 // ---------------------------------------- include headers ----------------------------------------
 
 #include "Cartesian2d.h"

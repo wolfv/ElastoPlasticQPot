@@ -18,6 +18,13 @@ namespace Cartesian2d {
 
 // --------------------------------------------- alias ---------------------------------------------
 
+typedef cppmat::matrix <size_t> ArrS;
+typedef cppmat::matrix <double> ArrD;
+typedef cppmat::matrix2<size_t> MatS;
+typedef cppmat::matrix2<double> MatD;
+typedef cppmat::vector <size_t> ColS;
+typedef cppmat::vector <double> ColD;
+
 typedef cppmat::cartesian2d::tensor2 <double> T2;
 typedef cppmat::cartesian2d::tensor2s<double> T2s;
 typedef cppmat::cartesian2d::tensor2d<double> T2d;
@@ -28,17 +35,31 @@ typedef cppmat::view::cartesian2d::tensor2d<double> vT2d;
 
 // -------------------------- equivalent stress/strain (Cartesian2d.cpp) ---------------------------
 
+// mean
 inline double sigm(const T2s &Sig);
-inline double sigd(const T2s &Sig);
 inline double epsm(const T2s &Eps);
+
+// equivalent deviator
+inline double sigd(const T2s &Sig);
 inline double epsd(const T2s &Eps);
+
+// deviator
+inline T2s Sigd(const T2s &Sig);
+inline T2s Epsd(const T2s &Eps);
 
 // ----------------------- equivalent stress/strain (Cartesian2d_Matrix.cpp) -----------------------
 
-inline ArrD sigm(const ArrD &Sig);
-inline ArrD sigd(const ArrD &Sig);
-inline ArrD epsm(const ArrD &Eps);
-inline ArrD epsd(const ArrD &Eps);
+// mean
+inline ArrD sigm(const ArrD &a_Sig);
+inline ArrD epsm(const ArrD &a_Eps);
+
+// equivalent deviator
+inline ArrD sigd(const ArrD &a_Sig);
+inline ArrD epsd(const ArrD &a_Eps);
+
+// deviator
+inline ArrD Sigd(const ArrD &a_Sig);
+inline ArrD Epsd(const ArrD &a_Eps);
 
 // ---------------------- material point - elastic (Cartesian2d_Elastic.cpp) -----------------------
 
@@ -53,11 +74,11 @@ private:
 public:
 
   // constructor
-  Elastic(){};
+  Elastic() = default;
   Elastic(double K, double G);
 
   // stress
-  T2s stress(const T2s &Eps) const;
+  T2s Sig(const T2s &Eps) const;
 
   // energy
   double energy(const T2s &Eps) const;
@@ -70,7 +91,7 @@ public:
   size_t find(double epsd) const;
 
   // a certain yield strain
-  double epsy(size_t i) const;
+  double epsy(size_t idx) const;
 
   // equivalent plastic strain
   double epsp(const T2s &Eps) const;
@@ -91,11 +112,11 @@ private:
 public:
 
   // constructor
-  Cusp(){};
+  Cusp() = default;
   Cusp(double K, double G, const std::vector<double> &epsy={}, bool init_elastic=true);
 
   // stress
-  T2s stress(const T2s &Eps) const;
+  T2s Sig(const T2s &Eps) const;
 
   // energy
   double energy(const T2s &Eps) const;
@@ -108,7 +129,7 @@ public:
   size_t find(double epsd) const;
 
   // a certain yield strain
-  double epsy(size_t i) const;
+  double epsy(size_t idx) const;
 
   // equivalent plastic strain
   double epsp(const T2s &Eps) const;
@@ -129,11 +150,11 @@ private:
 public:
 
   // constructor
-  Smooth(){};
+  Smooth() = default;
   Smooth(double K, double G, const std::vector<double> &epsy={}, bool init_elastic=true);
 
   // stress
-  T2s stress(const T2s &Eps) const;
+  T2s Sig(const T2s &Eps) const;
 
   // energy
   double energy(const T2s &Eps) const;
@@ -146,7 +167,7 @@ public:
   size_t find(double epsd) const;
 
   // a certain yield strain
-  double epsy(size_t i) const;
+  double epsy(size_t idx) const;
 
   // equivalent plastic strain
   double epsp(const T2s &Eps) const;
@@ -188,7 +209,7 @@ private:
 public:
 
   // constructor
-  Matrix(){};
+  Matrix() = default;
   Matrix(const std::vector<size_t> &shape);
 
   // return type
@@ -220,19 +241,19 @@ public:
     const MatS &index, const ColD &K, const ColD &G, const MatD &epsy, bool init_elastic=true);
 
   // stress
-  ArrD stress(const ArrD &Eps) const;
+  ArrD Sig(const ArrD &a_Eps) const;
 
   // energy
-  ArrD energy(const ArrD &Eps) const;
+  ArrD energy(const ArrD &a_Eps) const;
 
   // index of the current yield strain
-  ArrS find(const ArrD &Eps) const;
+  ArrS find(const ArrD &a_Eps) const;
 
   // a certain yield strain
-  ArrD epsy(const ArrS &i) const;
+  ArrD epsy(const ArrS &a_idx) const;
 
   // equivalent plastic strain
-  ArrD epsp(const ArrD &Eps) const;
+  ArrD epsp(const ArrD &a_Eps) const;
 
 };
 

@@ -33,7 +33,7 @@ SECTION( "Elastic" )
   // - strain
   Eps(0,0) = Eps(1,1) = epsm; Eps(0,1) = gamma;
   // - stress
-  Sig = mat.stress(Eps);
+  Sig = mat.Sig(Eps);
   // - analytical solution
   EQ( Sig(0,0), K * epsm  );
   EQ( Sig(1,1), K * epsm  );
@@ -65,7 +65,7 @@ SECTION( "Cusp" )
   // - strain
   Eps(0,0) = Eps(1,1) = epsm; Eps(0,1) = gamma;
   // - stress
-  Sig = mat.stress(Eps);
+  Sig = mat.Sig(Eps);
   // - analytical solution
   EQ( Sig(0,0), K * epsm );
   EQ( Sig(1,1), K * epsm );
@@ -97,7 +97,7 @@ SECTION( "Smooth" )
   // - strain
   Eps(0,0) = Eps(1,1) = epsm; Eps(0,1) = gamma;
   // - stress
-  Sig = mat.stress(Eps);
+  Sig = mat.Sig(Eps);
   // - analytical solution
   EQ( Sig(0,0), K * epsm );
   EQ( Sig(1,1), K * epsm );
@@ -188,7 +188,7 @@ SECTION( "Matrix" )
     for ( size_t k = 0 ; k < 2 ; ++k )
       std::copy(Eps.begin(), Eps.end(), eps.item(e,k));
   // - stress & plastic strain
-  sig  = mat.stress(eps);
+  sig  = mat.Sig(eps);
   epsp = mat.epsp  (eps);
   // - analytical solution
   EQ( sig(0,0,0), K * epsm ); EQ( sig(0,1,0), K * epsm );
