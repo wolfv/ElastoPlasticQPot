@@ -35,6 +35,19 @@ inline ArrS Matrix::type() const
   return m_type;
 }
 
+// ---------------------------------------- type is plastic ----------------------------------------
+
+inline ArrS Matrix::isPlastic() const
+{
+  ArrS out = ArrS::Zero(m_type.shape());
+
+  for ( size_t i = 0 ; i < m_type.size() ; ++i )
+    if ( m_type[i] != Type::Unset and m_type[i] != Type::Elastic )
+      out[i] = 1;
+
+  return out;
+}
+
 // --------------------------- check that a type has been set everywhere ---------------------------
 
 inline void Matrix::check() const

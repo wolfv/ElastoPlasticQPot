@@ -215,6 +215,9 @@ public:
   // return type
   ArrS type() const;
 
+  // return plastic yes/no
+  ArrS isPlastic() const;
+
   // check that a type has been set everywhere
   void check() const;
 
