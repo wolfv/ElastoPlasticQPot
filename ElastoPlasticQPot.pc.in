@@ -6,4 +6,4 @@ Description: Elasto-plastic model using multiple quadratic potentials
 Requires:
 Version: @ELASTOPLASTICQPOT_VERSION_NUMBER@
 Libs:
-Cflags: -I${prefix}/@INCLUDE_INSTALL_DIR@
+Cflags: -I${prefix}/@ELASTOPLASTICQPOT_INCLUDE_DIR@

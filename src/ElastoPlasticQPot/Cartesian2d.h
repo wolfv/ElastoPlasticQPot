@@ -18,12 +18,12 @@ namespace Cartesian2d {
 
 // --------------------------------------------- alias ---------------------------------------------
 
-typedef cppmat::matrix <size_t> ArrS;
-typedef cppmat::matrix <double> ArrD;
-typedef cppmat::matrix2<size_t> MatS;
-typedef cppmat::matrix2<double> MatD;
-typedef cppmat::vector <size_t> ColS;
-typedef cppmat::vector <double> ColD;
+typedef cppmat::array <size_t> ArrS;
+typedef cppmat::array <double> ArrD;
+typedef cppmat::matrix<size_t> MatS;
+typedef cppmat::matrix<double> MatD;
+typedef cppmat::vector<size_t> ColS;
+typedef cppmat::vector<double> ColD;
 
 typedef cppmat::cartesian2d::tensor2 <double> T2;
 typedef cppmat::cartesian2d::tensor2s<double> T2s;

@@ -9,45 +9,25 @@ include(GNUInstallDirs)
 # project settings
 # ----------------
 
-# define project information
+# name
 project(ElastoPlasticQPot)
 
-# list of header files
+# file that contains the version information
+set(parse_version src/${PROJECT_NAME}/${PROJECT_NAME}.h)
+
+# header files
 set(headers
-  ${PROJECT_NAME}/Cartesian2d.cpp
-  ${PROJECT_NAME}/Cartesian2d.h
-  ${PROJECT_NAME}/Cartesian2d_Cusp.cpp
-  ${PROJECT_NAME}/Cartesian2d_Elastic.cpp
-  ${PROJECT_NAME}/Cartesian2d_Matrix.cpp
+  src/${PROJECT_NAME}/ElastoPlasticQPot.h
+  src/${PROJECT_NAME}/Cartesian2d.h
+  src/${PROJECT_NAME}/Cartesian2d.cpp
+  src/${PROJECT_NAME}/Cartesian2d_Matrix.cpp
+  src/${PROJECT_NAME}/Cartesian2d_Elastic.cpp
+  src/${PROJECT_NAME}/Cartesian2d_Cusp.cpp
   ${PROJECT_NAME}/Cartesian2d_Smooth.cpp
-  ${PROJECT_NAME}/ElastoPlasticQPot.h
 )
 
-# options
-# -------
-
-# set options
-option(PKGCONFIG "Build pkg-config ${PROJECT_NAME}.pc file" ON)
-
-# disable pkg-config for native Windows builds
-if(WIN32 OR CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
-  option(PKGCONFIG "Build pkg-config ${PROJECT_NAME}.pc file" OFF)
-endif()
-
-# paths
-# -----
-
-set(ELASTOPLASTICQPOT_ROOT_DIR    "${CMAKE_INSTALL_PREFIX}")
-set(ELASTOPLASTICQPOT_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}")
-set(INCLUDE_INSTALL_DIR           "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")
-set(CMAKEPACKAGE_INSTALL_DIR      "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
-set(PKGCONFIG_INSTALL_DIR         "${CMAKE_INSTALL_DATADIR}/pkgconfig")
-
-# version
-# -------
-
 # automatically parse the version number
-file(READ "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/${PROJECT_NAME}.h" version)
+file(READ "${parse_version}" version)
 string(REGEX MATCH "define[ \t]+ELASTOPLASTICQPOT_WORLD_VERSION[ \t]+([0-9]+)" _ "${version}")
 set(world_version "${CMAKE_MATCH_1}")
 string(REGEX MATCH "define[ \t]+ELASTOPLASTICQPOT_MAJOR_VERSION[ \t]+([0-9]+)" _ "${version}")
@@ -55,6 +35,28 @@ set(major_version "${CMAKE_MATCH_1}")
 string(REGEX MATCH "define[ \t]+ELASTOPLASTICQPOT_MINOR_VERSION[ \t]+([0-9]+)" _ "${version}")
 set(minor_version "${CMAKE_MATCH_1}")
 set(ELASTOPLASTICQPOT_VERSION_NUMBER ${world_version}.${major_version}.${minor_version})
+
+# paths
+# -----
+
+set(ELASTOPLASTICQPOT_ROOT_DIR    "${CMAKE_INSTALL_PREFIX}")
+set(ELASTOPLASTICQPOT_INCLUDE_DIR "${CMAKE_INSTALL_INCLUDEDIR}")
+set(INCLUDE_INSTALL_DIR           "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")
+set(CMAKEPACKAGE_INSTALL_DIR      "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
+set(PKGCONFIG_INSTALL_DIR         "${CMAKE_INSTALL_DATADIR}/pkgconfig")
+set(fcmake                   "${PROJECT_NAME}Config.cmake")
+set(fpkg                     "${PROJECT_NAME}.pc")
+
+# options
+# -------
+
+# configure pkg-config (default: on)
+option(PKGCONFIG "Build pkg-config ${fpkg} file" ON)
+
+# disable pkg-config for native Windows builds
+if(WIN32 OR CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
+  option(PKGCONFIG "Build pkg-config ${fpkg} file" OFF)
+endif()
 
 # C++ standard
 # ------------
@@ -81,23 +83,15 @@ configure_package_config_file(
 
 # pkg-config
 if(PKGCONFIG)
-  configure_file(${PROJECT_NAME}.pc.in ${PROJECT_NAME}.pc @ONLY)
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc DESTINATION ${PKGCONFIG_INSTALL_DIR})
+  configure_file(${fpkg}.in ${fpkg} @ONLY)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${fpkg} DESTINATION ${PKGCONFIG_INSTALL_DIR})
 endif()
 
 # CMake
-install(FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-  DESTINATION
-  ${CMAKEPACKAGE_INSTALL_DIR}
-)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${fcmake} DESTINATION ${CMAKEPACKAGE_INSTALL_DIR})
 
-# headers
-install(FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/${headers}
-  DESTINATION
-  ${INCLUDE_INSTALL_DIR}/${PROJECT_NAME}
-)
+# header files
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${headers} DESTINATION ${INCLUDE_INSTALL_DIR})
 
 # print information to screen
 # ---------------------------
