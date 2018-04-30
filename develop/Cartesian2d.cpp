@@ -121,9 +121,9 @@ SECTION( "Matrix" )
 
   // row 0: elastic
   {
-    cppmat::matrix2<size_t> index(2,2);
-    cppmat::vector <double> k    (2  );
-    cppmat::vector <double> g    (2  );
+    GMat::MatS index(2,2);
+    GMat::ColD k    (2  );
+    GMat::ColD g    (2  );
 
     k.setConstant(K);
     g.setConstant(G);
@@ -136,10 +136,10 @@ SECTION( "Matrix" )
 
   // row 1: cups
   {
-    cppmat::matrix2<size_t> index(2,2);
-    cppmat::vector <double> k    (2  );
-    cppmat::vector <double> g    (2  );
-    cppmat::matrix2<double> epsy (2,3);
+    GMat::MatS index(2,2);
+    GMat::ColD k    (2  );
+    GMat::ColD g    (2  );
+    GMat::MatD epsy (2,3);
 
     k.setConstant(K);
     g.setConstant(G);
@@ -155,10 +155,10 @@ SECTION( "Matrix" )
 
   // row 2: smooth
   {
-    cppmat::matrix2<size_t> index(2,2);
-    cppmat::vector <double> k    (2  );
-    cppmat::vector <double> g    (2  );
-    cppmat::matrix2<double> epsy (2,3);
+    GMat::MatS index(2,2);
+    GMat::ColD k    (2  );
+    GMat::ColD g    (2  );
+    GMat::MatD epsy (2,3);
 
     k.setConstant(K);
     g.setConstant(G);
@@ -182,7 +182,7 @@ SECTION( "Matrix" )
   // - strain
   Eps(0,0) = Eps(1,1) = epsm; Eps(0,1) = gamma;
   // - strain/stress matrices
-  cppmat::matrix<double> eps({3,2,Eps.size()}), sig, epsp;
+  GMat::ArrD eps({3,2,Eps.size()}), sig, epsp;
   // - set strain
   for ( size_t e = 0 ; e < 3 ; ++e )
     for ( size_t k = 0 ; k < 2 ; ++k )

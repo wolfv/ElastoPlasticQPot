@@ -23,7 +23,7 @@ set(headers
   src/${PROJECT_NAME}/Cartesian2d_Matrix.cpp
   src/${PROJECT_NAME}/Cartesian2d_Elastic.cpp
   src/${PROJECT_NAME}/Cartesian2d_Cusp.cpp
-  ${PROJECT_NAME}/Cartesian2d_Smooth.cpp
+  src/${PROJECT_NAME}/Cartesian2d_Smooth.cpp
 )
 
 # automatically parse the version number
