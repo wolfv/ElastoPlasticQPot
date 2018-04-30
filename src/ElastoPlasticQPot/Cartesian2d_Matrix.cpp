@@ -233,7 +233,7 @@ inline ArrD Matrix::Sig(const ArrD &a_Eps) const
     for ( size_t i = 0 ; i < m_type.size() ; ++i )
     {
       // copy strain from matrix
-      T2s Eps = T2s::Copy(i_Eps+i*m_ncomp, i_Eps+(i+1)*m_ncomp);
+      T2s Eps = T2s::Copy(i_Eps+i*m_ncomp);
       T2s Sig;
       // compute
       switch ( m_type[i] )
@@ -274,7 +274,7 @@ inline ArrD Matrix::energy(const ArrD &a_Eps) const
     for ( size_t i = 0 ; i < m_type.size() ; ++i )
     {
       // copy strain from matrix
-      T2s Eps = T2s::Copy(i_Eps+i*m_ncomp, i_Eps+(i+1)*m_ncomp);
+      T2s Eps = T2s::Copy(i_Eps+i*m_ncomp);
       // compute/store
       switch ( m_type[i] )
       {
@@ -311,7 +311,7 @@ inline ArrS Matrix::find(const ArrD &a_Eps) const
     for ( size_t i = 0 ; i < m_type.size() ; ++i )
     {
       // copy strain from matrix
-      T2s Eps = T2s::Copy(i_Eps+i*m_ncomp, i_Eps+(i+1)*m_ncomp);
+      T2s Eps = T2s::Copy(i_Eps+i*m_ncomp);
       // compute/store
       switch ( m_type[i] )
       {
@@ -374,7 +374,7 @@ inline ArrD Matrix::epsp(const ArrD &a_Eps) const
     for ( size_t i = 0 ; i < m_type.size() ; ++i )
     {
       // copy strain from matrix
-      T2s Eps = T2s::Copy(i_Eps+i*m_ncomp, i_Eps+(i+1)*m_ncomp);
+      T2s Eps = T2s::Copy(i_Eps+i*m_ncomp);
       // compute/store
       switch ( m_type[i] )
       {
