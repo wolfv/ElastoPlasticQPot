@@ -121,55 +121,33 @@ SECTION( "Matrix" )
 
   // row 0: elastic
   {
-    GMat::MatS index(2,2);
-    GMat::ColD k    (2  );
-    GMat::ColD g    (2  );
+    GMat::ArrS I = GMat::ArrS::Zero(mat.shape());
 
-    k.setConstant(K);
-    g.setConstant(G);
+    for ( size_t k = 0 ; k < mat.shape(1) ; ++k ) I(0,k) = 1;
 
-    index(0,0) = 0;  index(0,1) = 0;
-    index(1,0) = 0;  index(1,1) = 1;
-
-    mat.addElastic(index,k,g);
+    mat.setElastic(I,K,G);
   }
 
   // row 1: cups
   {
-    GMat::MatS index(2,2);
-    GMat::ColD k    (2  );
-    GMat::ColD g    (2  );
-    GMat::MatD epsy (2,3);
+    GMat::ArrS I = GMat::ArrS::Zero(mat.shape());
 
-    k.setConstant(K);
-    g.setConstant(G);
+    std::vector<double> epsy = {0.01, 0.03, 0.10};
 
-    epsy(0,0) = 0.01; epsy(0,1) = 0.03; epsy(0,2) = 0.10;
-    epsy(1,0) = 0.01; epsy(1,1) = 0.03; epsy(1,2) = 0.10;
+    for ( size_t k = 0 ; k < mat.shape(1) ; ++k ) I(1,k) = 1;
 
-    index(0,0) = 1;  index(0,1) = 0;
-    index(1,0) = 1;  index(1,1) = 1;
-
-    mat.addCusp(index,k,g,epsy);
+    mat.setCusp(I,K,G,epsy);
   }
 
   // row 2: smooth
   {
-    GMat::MatS index(2,2);
-    GMat::ColD k    (2  );
-    GMat::ColD g    (2  );
-    GMat::MatD epsy (2,3);
+    GMat::ArrS I = GMat::ArrS::Zero(mat.shape());
 
-    k.setConstant(K);
-    g.setConstant(G);
+    std::vector<double> epsy = {0.01, 0.03, 0.10};
 
-    epsy(0,0) = 0.01; epsy(0,1) = 0.03; epsy(0,2) = 0.10;
-    epsy(1,0) = 0.01; epsy(1,1) = 0.03; epsy(1,2) = 0.10;
+    for ( size_t k = 0 ; k < mat.shape(1) ; ++k ) I(2,k) = 1;
 
-    index(0,0) = 2;  index(0,1) = 0;
-    index(1,0) = 2;  index(1,1) = 1;
-
-    mat.addSmooth(index,k,g,epsy);
+    mat.setCusp(I,K,G,epsy);
   }
 
   // allocate tensors

@@ -52,6 +52,20 @@ inline Smooth::Smooth(double K, double G, const std::vector<double> &epsy, bool 
     throw std::runtime_error("Specify at least two yield strains 'epsy'");
 }
 
+// ------------------------------------------ parameters -------------------------------------------
+
+inline double Smooth::K() const
+{
+  return m_K;
+}
+
+// ------------------------------------------ parameters -------------------------------------------
+
+inline double Smooth::G() const
+{
+  return m_G;
+}
+
 // ---------------------------------- equivalent deviator strain -----------------------------------
 
 inline double Smooth::epsd(const T2s &Eps) const

@@ -22,6 +22,20 @@ inline Elastic::Elastic(double K, double G) : m_K(K), m_G(G)
 {
 }
 
+// ------------------------------------------ parameters -------------------------------------------
+
+inline double Elastic::K() const
+{
+  return m_K;
+}
+
+// ------------------------------------------ parameters -------------------------------------------
+
+inline double Elastic::G() const
+{
+  return m_G;
+}
+
 // ---------------------------------- equivalent deviator strain -----------------------------------
 
 inline double Elastic::epsd(const T2s &Eps) const

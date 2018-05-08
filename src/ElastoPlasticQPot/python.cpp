@@ -12,7 +12,7 @@
 
 #include <cppmat/pybind11.h>
 
-#include "../src/ElastoPlasticQPot/ElastoPlasticQPot.h"
+#include "ElastoPlasticQPot.h"
 
 // =================================================================================================
 
@@ -38,6 +38,9 @@ namespace SM = ElastoPlasticQPot::Cartesian2d;
 // abbreviate types(s)
 typedef SM::T2s T2s;
 typedef SM::ArrD ArrD;
+typedef SM::ArrS ArrS;
+typedef SM::MatD MatD;
+typedef SM::ColD ColD;
 
 // -------------------------------------------------------------------------------------------------
 
@@ -150,12 +153,14 @@ py::class_<SM::Matrix>(sm, "Matrix")
     py::arg("shape")
   )
   // methods
-  .def("setElastic", &SM::Matrix::setElastic,py::arg("I")    ,py::arg("K"),py::arg("G"))
-  .def("setCusp"   , &SM::Matrix::setCusp   ,py::arg("I")    ,py::arg("K"),py::arg("G"),py::arg("epsy"),py::arg("init_elastic")=true)
-  .def("setSmooth" , &SM::Matrix::setSmooth ,py::arg("I")    ,py::arg("K"),py::arg("G"),py::arg("epsy"),py::arg("init_elastic")=true)
-  .def("addElastic", &SM::Matrix::addElastic,py::arg("index"),py::arg("K"),py::arg("G"))
-  .def("addCusp"   , &SM::Matrix::addCusp   ,py::arg("index"),py::arg("K"),py::arg("G"),py::arg("epsy"),py::arg("init_elastic")=true)
-  .def("addSmooth" , &SM::Matrix::addSmooth ,py::arg("index"),py::arg("K"),py::arg("G"),py::arg("epsy"),py::arg("init_elastic")=true)
+  .def("setElastic", py::overload_cast<const ArrS &, double, double                                              >(&SM::Matrix::setElastic),py::arg("I"),               py::arg("K"),py::arg("G"))
+  .def("setCusp"   , py::overload_cast<const ArrS &, double, double, const std::vector<double> &, bool           >(&SM::Matrix::setCusp   ),py::arg("I"),               py::arg("K"),py::arg("G"),py::arg("epsy"),py::arg("init_elastic")=true)
+  .def("setSmooth" , py::overload_cast<const ArrS &, double, double, const std::vector<double> &, bool           >(&SM::Matrix::setSmooth ),py::arg("I"),               py::arg("K"),py::arg("G"),py::arg("epsy"),py::arg("init_elastic")=true)
+  .def("setElastic", py::overload_cast<const ArrS &, const ArrS &, const ColD &, const ColD &                    >(&SM::Matrix::setElastic),py::arg("I"),py::arg("idx"),py::arg("K"),py::arg("G"))
+  .def("setCusp"   , py::overload_cast<const ArrS &, const ArrS &, const ColD &, const ColD &, const MatD &, bool>(&SM::Matrix::setCusp   ),py::arg("I"),py::arg("idx"),py::arg("K"),py::arg("G"),py::arg("epsy"),py::arg("init_elastic")=true)
+  .def("setSmooth" , py::overload_cast<const ArrS &, const ArrS &, const ColD &, const ColD &, const MatD &, bool>(&SM::Matrix::setSmooth ),py::arg("I"),py::arg("idx"),py::arg("K"),py::arg("G"),py::arg("epsy"),py::arg("init_elastic")=true)
+  .def("shape"     , py::overload_cast<size_t>(&SM::Matrix::shape, py::const_))
+  .def("shape"     , py::overload_cast<      >(&SM::Matrix::shape, py::const_))
   .def("type"      , &SM::Matrix::type)
   .def("Sig"       , &SM::Matrix::Sig   , py::arg("a_Eps"))
   .def("energy"    , &SM::Matrix::energy, py::arg("a_Eps"))

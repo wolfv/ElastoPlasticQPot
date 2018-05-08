@@ -98,35 +98,19 @@ G = 45.6
 mat = GMat.Matrix([3,2])
 
 # row 0: elastic
-k = [K, K]
-g = [G, G]
-
-index = [[0,0],
-         [0,1]]
-
-mat.addElastic(index,k,g)
+I      = np.zeros(mat.shape(), dtype='int')
+I[0,:] = 1
+mat.setElastic(I,K,G)
 
 # row 1: cups
-k    = [K, K]
-g    = [G, G]
-epsy = [[0.01,0.03,0.10],
-        [0.01,0.03,0.10]]
-
-index = [[1,0],
-         [1,1]]
-
-mat.addCusp(index,k,g,epsy)
+I      = np.zeros(mat.shape(), dtype='int')
+I[1,:] = 1
+mat.setCusp(I,K,G,[0.01,0.03,0.10])
 
 # row 2: smooth
-k    = [K, K]
-g    = [G, G]
-epsy = [[0.01,0.03,0.10],
-        [0.01,0.03,0.10]]
-
-index = [[2,0],
-         [2,1]]
-
-mat.addSmooth(index,k,g,epsy)
+I      = np.zeros(mat.shape(), dtype='int')
+I[2,:] = 1
+mat.setSmooth(I,K,G,[0.01,0.03,0.10])
 
 # simple shear + volumetric deformation
 # - parameters

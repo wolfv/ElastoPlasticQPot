@@ -9,7 +9,7 @@ import setuptools
 import pybind11
 import cppmat
 
-header = open('../src/ElastoPlasticQPot/ElastoPlasticQPot.h','r').read()
+header = open('src/ElastoPlasticQPot/ElastoPlasticQPot.h','r').read()
 world  = re.split('(.*)(\#define ELASTOPLASTICQPOT_WORLD_VERSION\ )([0-9]+)(.*)',header)[3]
 major  = re.split('(.*)(\#define ELASTOPLASTICQPOT_MAJOR_VERSION\ )([0-9]+)(.*)',header)[3]
 minor  = re.split('(.*)(\#define ELASTOPLASTICQPOT_MINOR_VERSION\ )([0-9]+)(.*)',header)[3]
@@ -19,7 +19,7 @@ __version__ = '.'.join([world,major,minor])
 ext_modules = [
   Extension(
     'ElastoPlasticQPot',
-    ['python_interface.cpp'],
+    ['src/ElastoPlasticQPot/python.cpp'],
     include_dirs=[
       pybind11.get_include(False),
       pybind11.get_include(True ),

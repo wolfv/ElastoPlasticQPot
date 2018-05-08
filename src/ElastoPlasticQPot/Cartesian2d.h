@@ -80,6 +80,10 @@ public:
   // stress
   T2s Sig(const T2s &Eps) const;
 
+  // parameters
+  double K() const;
+  double G() const;
+
   // energy
   double energy(const T2s &Eps) const;
 
@@ -90,7 +94,7 @@ public:
   size_t find(const T2s &Eps) const;
   size_t find(double epsd) const;
 
-  // a certain yield strain
+  // certain yield strain
   double epsy(size_t idx) const;
 
   // equivalent plastic strain
@@ -118,6 +122,10 @@ public:
   // stress
   T2s Sig(const T2s &Eps) const;
 
+  // parameters
+  double K() const;
+  double G() const;
+
   // energy
   double energy(const T2s &Eps) const;
 
@@ -128,7 +136,7 @@ public:
   size_t find(const T2s &Eps) const;
   size_t find(double epsd) const;
 
-  // a certain yield strain
+  // certain yield strain
   double epsy(size_t idx) const;
 
   // equivalent plastic strain
@@ -156,6 +164,10 @@ public:
   // stress
   T2s Sig(const T2s &Eps) const;
 
+  // parameters
+  double K() const;
+  double G() const;
+
   // energy
   double energy(const T2s &Eps) const;
 
@@ -166,7 +178,7 @@ public:
   size_t find(const T2s &Eps) const;
   size_t find(double epsd) const;
 
-  // a certain yield strain
+  // certain yield strain
   double epsy(size_t idx) const;
 
   // equivalent plastic strain
@@ -212,36 +224,44 @@ public:
   Matrix() = default;
   Matrix(const std::vector<size_t> &shape);
 
+  // return shape
+  std::vector<size_t> shape() const;
+  size_t shape(size_t i) const;
+
   // return type
   ArrS type() const;
 
   // return plastic yes/no
   ArrS isPlastic() const;
 
+  // parameters
+  ArrD K() const;
+  ArrD G() const;
+
   // check that a type has been set everywhere
   void check() const;
 
   // set material definition for a batch of points
   // -
-  void setElastic(
-    const ArrS &I, double K, double G);
+  void setElastic(const ArrS &I,
+    double K, double G);
   // -
-  void setCusp(
-    const ArrS &I, double K, double G, const std::vector<double> &epsy, bool init_elastic=true);
+  void setCusp(const ArrS &I,
+    double K, double G, const std::vector<double> &epsy, bool init_elastic=true);
   // -
-  void setSmooth(
-    const ArrS &I, double K, double G, const std::vector<double> &epsy, bool init_elastic=true);
+  void setSmooth(const ArrS &I,
+    double K, double G, const std::vector<double> &epsy, bool init_elastic=true);
 
-  // add material definition, specified per point
+  // set material definition for a batch of points
   // -
-  void addElastic(
-    const MatS &index, const ColD &K, const ColD &G);
+  void setElastic(const ArrS &I, const ArrS &idx,
+    const ColD &K, const ColD &G);
   // -
-  void addCusp(
-    const MatS &index, const ColD &K, const ColD &G, const MatD &epsy, bool init_elastic=true);
+  void setCusp(const ArrS &I, const ArrS &idx,
+    const ColD &K, const ColD &G, const MatD &epsy, bool init_elastic=true);
   // -
-  void addSmooth(
-    const MatS &index, const ColD &K, const ColD &G, const MatD &epsy, bool init_elastic=true);
+  void setSmooth(const ArrS &I, const ArrS &idx,
+    const ColD &K, const ColD &G, const MatD &epsy, bool init_elastic=true);
 
   // stress
   ArrD Sig(const ArrD &a_Eps) const;
@@ -252,7 +272,7 @@ public:
   // index of the current yield strain
   ArrS find(const ArrD &a_Eps) const;
 
-  // a certain yield strain
+  // certain yield strain
   ArrD epsy(const ArrS &a_idx) const;
 
   // equivalent plastic strain

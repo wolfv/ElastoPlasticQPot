@@ -52,6 +52,20 @@ inline Cusp::Cusp(double K, double G, const std::vector<double> &epsy, bool init
     throw std::runtime_error("Specify at least two yield strains 'epsy'");
 }
 
+// ------------------------------------------ parameters -------------------------------------------
+
+inline double Cusp::K() const
+{
+  return m_K;
+}
+
+// ------------------------------------------ parameters -------------------------------------------
+
+inline double Cusp::G() const
+{
+  return m_G;
+}
+
 // ---------------------------------- equivalent deviator strain -----------------------------------
 
 inline double Cusp::epsd(const T2s &Eps) const
