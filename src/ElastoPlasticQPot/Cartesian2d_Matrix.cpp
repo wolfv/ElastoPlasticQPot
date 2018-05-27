@@ -214,7 +214,7 @@ inline void Matrix::setElastic(const ArrS &I, const ArrS &idx, const ColD &K, co
       if ( I[i] )
         assert( m_type[i] == Type::Unset );
     // - extent
-    assert( idx.maxCoeff() == K.size()-1 );
+    assert( idx.max() == K.size()-1 );
     // - consistency
     assert( K.size() == G.size() );
   #endif
@@ -250,10 +250,10 @@ inline void Matrix::setCusp(const ArrS &I, const ArrS &idx,
       if ( I[i] )
         assert( m_type[i] == Type::Unset );
     // - extent
-    assert( idx.maxCoeff() == K.size()-1 );
+    assert( idx.max() == K.size()-1 );
     // - consistency
-    assert( K.size() == G   .size() );
-    assert( K.size() == epsy.rows() );
+    assert( K.size() == G.size()      );
+    assert( K.size() == epsy.shape(0) );
   #endif
 
   // start index
@@ -261,7 +261,7 @@ inline void Matrix::setCusp(const ArrS &I, const ArrS &idx,
 
   // store material definition
   for ( size_t i = 0 ; i < K.size() ; ++i ) {
-    std::vector<double> y(epsy.beginRow(i), epsy.endRow(i));
+    std::vector<double> y(epsy.item(i), epsy.item(i)+epsy.shape(1));
     m_Cusp.push_back(Cusp(K(i), G(i), y, init_elastic));
   }
 
@@ -289,10 +289,10 @@ inline void Matrix::setSmooth(const ArrS &I, const ArrS &idx,
       if ( I[i] )
         assert( m_type[i] == Type::Unset );
     // - extent
-    assert( idx.maxCoeff() == K.size()-1 );
+    assert( idx.max() == K.size()-1 );
     // - consistency
-    assert( K.size() == G   .size() );
-    assert( K.size() == epsy.rows() );
+    assert( K.size() == G.size()      );
+    assert( K.size() == epsy.shape(0) );
   #endif
 
   // start index
@@ -300,7 +300,7 @@ inline void Matrix::setSmooth(const ArrS &I, const ArrS &idx,
 
   // store material definition
   for ( size_t i = 0 ; i < K.size() ; ++i ) {
-    std::vector<double> y(epsy.beginRow(i), epsy.endRow(i));
+    std::vector<double> y(epsy.item(i), epsy.item(i)+epsy.shape(1));
     m_Smooth.push_back(Smooth(K(i), G(i), y, init_elastic));
   }
 

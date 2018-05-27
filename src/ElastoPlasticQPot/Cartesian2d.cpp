@@ -55,7 +55,7 @@ inline ArrD epsm(const ArrD &a_Eps)
   size_t N = a_Eps.size() / ncomp;
 
   // check input
-  assert( a_Eps.ndim()    >= 2     );
+  assert( a_Eps.rank()    >= 2     );
   assert( a_Eps.shape(-1) == ncomp );
 
   // allocate output: matrix of scalars (shape of the input matrix, without tensor-components)
@@ -69,7 +69,7 @@ inline ArrD epsm(const ArrD &a_Eps)
     for ( size_t i = 0 ; i < N ; ++i )
     {
       // map from matrix of strains
-      vT2s Eps = vT2s::Map(&a_Eps[i*ncomp]);
+      T2s Eps = T2s::Copy(a_Eps.index(i*ncomp));
       // compute/store the mean strain
       a_epsm[i] = Eps.trace()/2.;
     }
@@ -88,7 +88,7 @@ inline ArrD epsd(const ArrD &a_Eps)
   size_t N = a_Eps.size() / ncomp;
 
   // check input
-  assert( a_Eps.ndim()    >= 2     );
+  assert( a_Eps.rank()    >= 2     );
   assert( a_Eps.shape(-1) == ncomp );
 
   // allocate output: matrix of scalars (shape of the input matrix, without tensor-components)
@@ -102,9 +102,9 @@ inline ArrD epsd(const ArrD &a_Eps)
     for ( size_t i = 0 ; i < N ; ++i )
     {
       // map from matrix of strains
-      vT2s Eps  = vT2s::Map(&a_Eps[i*ncomp]);
+      T2s Eps = T2s::Copy(a_Eps.index(i*ncomp));
       // compute the strain deviator
-      T2s  Epsd = Eps - Eps.trace()/2. * T2d::I();
+      T2s Epsd = Eps - Eps.trace()/2. * T2d::I();
       // compute/store the equivalent strain deviator
       a_epsd[i] = std::sqrt(.5*Epsd.ddot(Epsd));
     }
@@ -123,7 +123,7 @@ inline ArrD Epsd(const ArrD &a_Eps)
   size_t N = a_Eps.size() / ncomp;
 
   // check input
-  assert( a_Eps.ndim()    >= 2     );
+  assert( a_Eps.rank()    >= 2     );
   assert( a_Eps.shape(-1) == ncomp );
 
   // allocate output: matrix of tensors
@@ -140,9 +140,9 @@ inline ArrD Epsd(const ArrD &a_Eps)
     for ( size_t i = 0 ; i < N ; ++i )
     {
       // map from matrix of strains
-      vT2s Eps  = vT2s::Map(&a_Eps[i*ncomp]);
+      T2s Eps = T2s::Copy(a_Eps.index(i*ncomp));
       // compute the strain deviator
-      T2s  Epsd = Eps - Eps.trace()/2. * T2d::I();
+      T2s Epsd = Eps - Eps.trace()/2. * T2d::I();
       // store the strain deviator
       std::copy(Epsd.begin(), Epsd.end(), i_Epsd+i*ncomp);
     }

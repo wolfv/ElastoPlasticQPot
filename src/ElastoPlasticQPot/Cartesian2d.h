@@ -25,13 +25,9 @@ typedef cppmat::matrix<double> MatD;
 typedef cppmat::vector<size_t> ColS;
 typedef cppmat::vector<double> ColD;
 
-typedef cppmat::cartesian2d::tensor2 <double> T2;
-typedef cppmat::cartesian2d::tensor2s<double> T2s;
-typedef cppmat::cartesian2d::tensor2d<double> T2d;
-
-typedef cppmat::view::cartesian2d::tensor2 <double> vT2;
-typedef cppmat::view::cartesian2d::tensor2s<double> vT2s;
-typedef cppmat::view::cartesian2d::tensor2d<double> vT2d;
+typedef cppmat::tiny::cartesian::tensor2 <double,2> T2;
+typedef cppmat::tiny::cartesian::tensor2s<double,2> T2s;
+typedef cppmat::tiny::cartesian::tensor2d<double,2> T2d;
 
 // -------------------------- equivalent stress/strain (Cartesian2d.cpp) ---------------------------
 
