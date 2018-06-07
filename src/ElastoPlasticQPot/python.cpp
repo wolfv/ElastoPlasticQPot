@@ -36,7 +36,7 @@ py::module sm = m.def_submodule("Cartesian2d", "2d Cartesian coordinates");
 namespace SM = ElastoPlasticQPot::Cartesian2d;
 
 // abbreviate types(s)
-typedef SM::T2s T2s;
+typedef SM::T2s  T2s;
 typedef SM::ArrD ArrD;
 typedef SM::ArrS ArrS;
 typedef SM::MatD MatD;
