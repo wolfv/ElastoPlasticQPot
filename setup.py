@@ -10,9 +10,9 @@ import pybind11
 import cppmat
 
 header = open('src/ElastoPlasticQPot/ElastoPlasticQPot.h','r').read()
-world  = re.split('(.*)(\#define ELASTOPLASTICQPOT_WORLD_VERSION\ )([0-9]+)(.*)',header)[3]
-major  = re.split('(.*)(\#define ELASTOPLASTICQPOT_MAJOR_VERSION\ )([0-9]+)(.*)',header)[3]
-minor  = re.split('(.*)(\#define ELASTOPLASTICQPOT_MINOR_VERSION\ )([0-9]+)(.*)',header)[3]
+world  = re.split(r'(.*)(\#define ELASTOPLASTICQPOT_WORLD_VERSION\ )([0-9]+)(.*)',header)[3]
+major  = re.split(r'(.*)(\#define ELASTOPLASTICQPOT_MAJOR_VERSION\ )([0-9]+)(.*)',header)[3]
+minor  = re.split(r'(.*)(\#define ELASTOPLASTICQPOT_MINOR_VERSION\ )([0-9]+)(.*)',header)[3]
 
 __version__ = '.'.join([world,major,minor])
 

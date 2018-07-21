@@ -19,11 +19,11 @@ set(parse_version src/${PROJECT_NAME}/${PROJECT_NAME}.h)
 set(headers
   src/${PROJECT_NAME}/ElastoPlasticQPot.h
   src/${PROJECT_NAME}/Cartesian2d.h
-  src/${PROJECT_NAME}/Cartesian2d.cpp
-  src/${PROJECT_NAME}/Cartesian2d_Matrix.cpp
-  src/${PROJECT_NAME}/Cartesian2d_Elastic.cpp
-  src/${PROJECT_NAME}/Cartesian2d_Cusp.cpp
-  src/${PROJECT_NAME}/Cartesian2d_Smooth.cpp
+  src/${PROJECT_NAME}/Cartesian2d.hpp
+  src/${PROJECT_NAME}/Cartesian2d_Matrix.hpp
+  src/${PROJECT_NAME}/Cartesian2d_Elastic.hpp
+  src/${PROJECT_NAME}/Cartesian2d_Cusp.hpp
+  src/${PROJECT_NAME}/Cartesian2d_Smooth.hpp
 )
 
 # automatically parse the version number
@@ -44,8 +44,8 @@ set(ELASTOPLASTICQPOT_INCLUDE_DIR "${CMAKE_INSTALL_INCLUDEDIR}")
 set(INCLUDE_INSTALL_DIR           "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")
 set(CMAKEPACKAGE_INSTALL_DIR      "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
 set(PKGCONFIG_INSTALL_DIR         "${CMAKE_INSTALL_DATADIR}/pkgconfig")
-set(fcmake                   "${PROJECT_NAME}Config.cmake")
-set(fpkg                     "${PROJECT_NAME}.pc")
+set(fcmake                        "${PROJECT_NAME}Config.cmake")
+set(fpkg                          "${PROJECT_NAME}.pc")
 
 # options
 # -------

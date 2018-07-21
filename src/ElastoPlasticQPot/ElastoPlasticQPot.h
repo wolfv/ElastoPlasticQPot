@@ -27,7 +27,7 @@
 
 #define ELASTOPLASTICQPOT_WORLD_VERSION 0
 #define ELASTOPLASTICQPOT_MAJOR_VERSION 0
-#define ELASTOPLASTICQPOT_MINOR_VERSION 3
+#define ELASTOPLASTICQPOT_MINOR_VERSION 4
 
 #define ELASTOPLASTICQPOT_VERSION_AT_LEAST(x,y,z) \
   (ELASTOPLASTICQPOT_WORLD_VERSION>x || (ELASTOPLASTICQPOT_WORLD_VERSION>=x && \
@@ -45,11 +45,11 @@
 
 // ---------------------------------------- include scripts ----------------------------------------
 
-#include "Cartesian2d.cpp"
-#include "Cartesian2d_Elastic.cpp"
-#include "Cartesian2d_Cusp.cpp"
-#include "Cartesian2d_Smooth.cpp"
-#include "Cartesian2d_Matrix.cpp"
+#include "Cartesian2d.hpp"
+#include "Cartesian2d_Elastic.hpp"
+#include "Cartesian2d_Cusp.hpp"
+#include "Cartesian2d_Smooth.hpp"
+#include "Cartesian2d_Matrix.hpp"
 
 // -------------------------------------------------------------------------------------------------
 
