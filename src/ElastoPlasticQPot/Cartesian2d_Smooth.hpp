@@ -70,9 +70,9 @@ inline double Smooth::G() const
 
 inline double Smooth::epsd(const T2s &Eps) const
 {
-  T2s Epsd = Eps - Eps.trace()/2. * T2d::I();
+  auto Epsd = Eps - trace(Eps)/ND * xt::eye(ndim);
 
-  return std::sqrt(.5*Epsd.ddot(Epsd));
+  return std::sqrt(.5*ddot(Epsd,Epsd));
 }
 
 // ----------------------------------- equivalent plastic strain -----------------------------------
@@ -143,21 +143,20 @@ inline size_t Smooth::find(double epsd) const
 inline T2s Smooth::Sig(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
-  T2d    I    = T2d::I();
-  double epsm = Eps.trace()/2.;
-  T2s    Epsd = Eps - epsm*I;
-  double epsd = std::sqrt(.5*Epsd.ddot(Epsd));
+  auto epsm = trace(Eps)/ND;
+  auto Epsd = Eps - epsm * xt::eye(ndim);
+  auto epsd = std::sqrt(.5*ddot(Epsd,Epsd));
 
   // no deviatoric strain -> only hydrostatic stress
-  if ( epsd <= 0. ) return (m_K*epsm) * I;
+  if ( epsd <= 0. ) return m_K * epsm * xt::eye(ndim);
 
   // read current yield strains
-  size_t i       = find(epsd);
-  double eps_min = ( m_epsy[i+1] + m_epsy[i] ) / 2.;
-  double deps_y  = ( m_epsy[i+1] - m_epsy[i] ) / 2.;
+  auto i       = find(epsd);
+  auto eps_min = ( m_epsy[i+1] + m_epsy[i] ) / 2.;
+  auto deps_y  = ( m_epsy[i+1] - m_epsy[i] ) / 2.;
 
   // return stress tensor
-  return (m_K*epsm)*I + ((m_G/epsd)*(deps_y/M_PI)*sin(M_PI/deps_y*(epsd-eps_min)))*Epsd;
+  return m_K*epsm*xt::eye(ndim) + ((m_G/epsd)*(deps_y/M_PI)*sin(M_PI/deps_y*(epsd-eps_min)))*Epsd;
 }
 
 // -------------------------------------------- energy ---------------------------------------------
@@ -165,21 +164,20 @@ inline T2s Smooth::Sig(const T2s &Eps) const
 inline double Smooth::energy(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
-  T2d    I    = T2d::I();
-  double epsm = Eps.trace()/2.;
-  T2s    Epsd = Eps - epsm*I;
-  double epsd = std::sqrt(.5*Epsd.ddot(Epsd));
+  auto epsm = trace(Eps)/ND;
+  auto Epsd = Eps - epsm * xt::eye(ndim);
+  auto epsd = std::sqrt(.5*ddot(Epsd,Epsd));
 
   // hydrostatic part of the energy
-  double U = m_K * std::pow(epsm,2.);
+  auto U = m_K * std::pow(epsm,2.);
 
   // read current yield strain
-  size_t i       = find(epsd);
-  double eps_min = ( m_epsy[i+1] + m_epsy[i] ) / 2.;
-  double deps_y  = ( m_epsy[i+1] - m_epsy[i] ) / 2.;
+  auto i       = find(epsd);
+  auto eps_min = ( m_epsy[i+1] + m_epsy[i] ) / 2.;
+  auto deps_y  = ( m_epsy[i+1] - m_epsy[i] ) / 2.;
 
   // deviatoric part of the energy
-  double V = -2.*m_G * std::pow(deps_y/M_PI,2.) * ( 1. + cos( M_PI/deps_y * (epsd-eps_min) ) );
+  auto V = -2.*m_G * std::pow(deps_y/M_PI,2.) * ( 1. + cos( M_PI/deps_y * (epsd-eps_min) ) );
 
   // return total energy
   return U + V;

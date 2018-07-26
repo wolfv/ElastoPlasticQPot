@@ -16,262 +16,302 @@
 namespace ElastoPlasticQPot {
 namespace Cartesian2d {
 
-// ------------------------------------------ mean strain ------------------------------------------
+// ======================================== TENSOR PRODUCTS ========================================
+
+// --------------------------------------------- trace ---------------------------------------------
+
+double trace(const T2s &A)
+{
+  return A(0,0) + A(1,1);
+}
+
+// -------------------------------------- double dot product ---------------------------------------
+
+double ddot(const T2s &A, const T2s &B)
+{
+  return A(0,0) * B(0,0) + 2.0 * A(0,1) * B(0,1) + A(1,1) * B(1,1);
+}
+
+// ===================================== TENSOR DECOMPOSITION ======================================
+
+// -------------------------------------- hydrostatic strain ---------------------------------------
 
 inline double epsm(const T2s &Eps)
 {
-  return Eps.trace()/2.;
+  return trace(Eps)/ND;
 }
 
-// ---------------------------------- equivalent strain deviator -----------------------------------
+// --------------------------------- equivalent deviatoric strain ----------------------------------
 
 inline double epsd(const T2s &Eps)
 {
-  T2s Epsd = Eps - Eps.trace()/2. * T2d::I();
+  T2s Epsd = Eps - trace(Eps)/ND * xt::eye(ndim);
 
-  return std::sqrt(.5*Epsd.ddot(Epsd));
+  return std::sqrt(.5*ddot(Epsd,Epsd));
 }
 
 // ---------------------------------------- strain deviator ----------------------------------------
 
 inline T2s Epsd(const T2s &Eps)
 {
-  return Eps - Eps.trace()/2. * T2d::I();
+  return Eps - trace(Eps)/ND * xt::eye(ndim);
 }
 
-// ------------------------------------------ mean stress ------------------------------------------
+// -------------------------------------- hydrostatic stress ---------------------------------------
 
 inline double sigm(const T2s &Sig)
 {
-  return Sig.trace()/2.;
+  return trace(Sig)/ND;
 }
 
-// ---------------------------------- equivalent stress deviator -----------------------------------
+// --------------------------------- equivalent deviatoric stress ----------------------------------
 
 inline double sigd(const T2s &Sig)
 {
-  T2s Sigd = Sig - Sig.trace()/2. * T2d::I();
+  T2s Sigd = Sig - trace(Sig)/ND * xt::eye(ndim);
 
-  return std::sqrt(2.*Sigd.ddot(Sigd));
+  return std::sqrt(2.*ddot(Sigd,Sigd));
 }
 
 // ---------------------------------------- stress deviator ----------------------------------------
 
 inline T2s Sigd(const T2s &Sig)
 {
-  return Sig - Sig.trace()/2. * T2d::I();
+  return Sig - trace(Sig)/ND * xt::eye(ndim);
 }
 
-// ------------------------------------- mean strain - matrix --------------------------------------
+// ================================= TENSOR DECOMPOSITION - MATRIX =================================
 
-inline ArrD epsm(const ArrD &a_Eps)
+// -------------------------------------- hydrostatic strain ---------------------------------------
+
+inline void epsm(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_epsm)
 {
-  // number of tensor-components
-  static const size_t ncomp = 3;
-  // number of entries
-  size_t N = a_Eps.size() / ncomp;
-
   // check input
-  assert( a_Eps.rank()    >= 2     );
-  assert( a_Eps.shape(-1) == ncomp );
-
-  // allocate output: matrix of scalars (shape of the input matrix, without tensor-components)
-  ArrD a_epsm(cppmat::del(a_Eps.shape(),-1));
+  assert( a_Eps.shape()[2] == ndim );
+  assert( a_Eps.shape()[3] == ndim );
 
   // start threads (all allocated variables inside this block are local to each thread)
   #pragma omp parallel
   {
     // loop over all points
     #pragma omp for
-    for ( size_t i = 0 ; i < N ; ++i )
+    for ( size_t e = 0 ; e < a_Eps.shape()[0] ; ++e )
     {
-      // map from matrix of strains
-      T2s Eps = T2s::Copy(a_Eps.index(i*ncomp));
-      // compute/store the mean strain
-      a_epsm[i] = Eps.trace()/2.;
+      for ( size_t k = 0 ; k < a_Eps.shape()[1] ; ++k )
+      {
+        // - strain tensor
+        auto Eps = xt::view(a_Eps, e, k, xt::all(), xt::all());
+        // - trace
+        a_epsm(e,k) = trace(Eps)/ND;
+      }
     }
   }
-
-  return a_epsm;
 }
 
-// ------------------------------ equivalent strain deviator - matrix ------------------------------
+// -------------------------------- hydrostatic strain - interface ---------------------------------
 
-inline ArrD epsd(const ArrD &a_Eps)
+inline xt::xtensor<double,2> epsm(const xt::xtensor<double,4> &a_Eps)
 {
-  // number of tensor-components
-  static const size_t ncomp = 3;
-  // number of entries
-  size_t N = a_Eps.size() / ncomp;
+  xt::xtensor<double,2> out = xt::empty<double>({a_Eps.shape()[0], a_Eps.shape()[1]});
 
+  epsm(a_Eps, out);
+
+  return out;
+}
+
+// --------------------------------- equivalent deviatoric strain ----------------------------------
+
+inline void epsd(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_epsd)
+{
   // check input
-  assert( a_Eps.rank()    >= 2     );
-  assert( a_Eps.shape(-1) == ncomp );
-
-  // allocate output: matrix of scalars (shape of the input matrix, without tensor-components)
-  ArrD a_epsd(cppmat::del(a_Eps.shape(),-1));
+  assert( a_Eps.shape()[2] == ndim );
+  assert( a_Eps.shape()[3] == ndim );
 
   // start threads (all allocated variables inside this block are local to each thread)
   #pragma omp parallel
   {
     // loop over all points
     #pragma omp for
-    for ( size_t i = 0 ; i < N ; ++i )
+    for ( size_t e = 0 ; e < a_Eps.shape()[0] ; ++e )
     {
-      // map from matrix of strains
-      T2s Eps = T2s::Copy(a_Eps.index(i*ncomp));
-      // compute the strain deviator
-      T2s Epsd = Eps - Eps.trace()/2. * T2d::I();
-      // compute/store the equivalent strain deviator
-      a_epsd[i] = std::sqrt(.5*Epsd.ddot(Epsd));
+      for ( size_t k = 0 ; k < a_Eps.shape()[1] ; ++k )
+      {
+        // - strain tensor
+        auto Eps = xt::view(a_Eps, e, k, xt::all(), xt::all());
+        // - strain deviator
+        auto Epsd = Eps - trace(Eps)/ND * xt::eye(ndim);
+        // - trace
+        a_epsd(e,k) = std::sqrt(.5*ddot(Epsd,Epsd));
+      }
     }
   }
-
-  return a_epsd;
 }
 
-// ----------------------------------- strain deviator - matrix ------------------------------------
+// --------------------------- equivalent deviatoric strain - interface ----------------------------
 
-inline ArrD Epsd(const ArrD &a_Eps)
+inline xt::xtensor<double,2> epsd(const xt::xtensor<double,4> &a_Eps)
 {
-  // number of tensor-components
-  static const size_t ncomp = 3;
-  // number of entries
-  size_t N = a_Eps.size() / ncomp;
+  xt::xtensor<double,2> out = xt::empty<double>({a_Eps.shape()[0], a_Eps.shape()[1]});
 
+  epsd(a_Eps, out);
+
+  return out;
+}
+
+// ---------------------------------------- strain deviator ----------------------------------------
+
+inline void Epsd(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4> &a_Epsd)
+{
   // check input
-  assert( a_Eps.rank()    >= 2     );
-  assert( a_Eps.shape(-1) == ncomp );
-
-  // allocate output: matrix of tensors
-  ArrD a_Epsd(a_Eps.shape());
-
-  // iterators
-  auto i_Epsd = a_Epsd.begin();
+  assert( a_Eps .shape()[2] == ndim );
+  assert( a_Eps .shape()[3] == ndim );
+  assert( a_Epsd.shape()[2] == ndim );
+  assert( a_Epsd.shape()[3] == ndim );
 
   // start threads (all allocated variables inside this block are local to each thread)
   #pragma omp parallel
   {
     // loop over all points
     #pragma omp for
-    for ( size_t i = 0 ; i < N ; ++i )
+    for ( size_t e = 0 ; e < a_Eps.shape()[0] ; ++e )
     {
-      // map from matrix of strains
-      T2s Eps = T2s::Copy(a_Eps.index(i*ncomp));
-      // compute the strain deviator
-      T2s Epsd = Eps - Eps.trace()/2. * T2d::I();
-      // store the strain deviator
-      std::copy(Epsd.begin(), Epsd.end(), i_Epsd+i*ncomp);
+      for ( size_t k = 0 ; k < a_Eps.shape()[1] ; ++k )
+      {
+        // - strain tensor
+        auto Eps  = xt::view(a_Eps , e, k, xt::all(), xt::all());
+        auto Epsd = xt::view(a_Epsd, e, k, xt::all(), xt::all());
+        // - strain deviator
+        Epsd = Eps - trace(Eps)/ND * xt::eye(ndim);
+      }
     }
   }
-
-  return a_Epsd;
 }
 
-// ------------------------------------- mean stress - matrix --------------------------------------
+// ---------------------------------- strain deviator - interface ----------------------------------
 
-inline ArrD sigm(const ArrD &a_Sig)
+inline xt::xtensor<double,4> Epsd(const xt::xtensor<double,4> &a_Eps)
 {
-  // number of tensor-components
-  static const size_t ncomp = 3;
-  // number of entries
-  size_t N = a_Sig.size() / ncomp;
+  xt::xtensor<double,4> out = xt::empty<double>(a_Eps.shape());
 
+  Epsd(a_Eps, out);
+
+  return out;
+}
+
+// -------------------------------------- hydrostatic strain ---------------------------------------
+
+inline void sigm(const xt::xtensor<double,4> &a_Sig, xt::xtensor<double,2> &a_sigm)
+{
   // check input
-  assert( a_Sig.rank()    >= 2     );
-  assert( a_Sig.shape(-1) == ncomp );
-
-  // allocate output: matrix of scalars (shape of the input matrix, without tensor-components)
-  ArrD a_sigm(cppmat::del(a_Sig.shape(),-1));
+  assert( a_Sig.shape()[2] == ndim );
+  assert( a_Sig.shape()[3] == ndim );
 
   // start threads (all allocated variables inside this block are local to each thread)
   #pragma omp parallel
   {
     // loop over all points
     #pragma omp for
-    for ( size_t i = 0 ; i < N ; ++i )
+    for ( size_t e = 0 ; e < a_Sig.shape()[0] ; ++e )
     {
-      // map from matrix of strains
-      T2s Sig = T2s::Copy(a_Sig.index(i*ncomp));
-      // compute/store the mean stress
-      a_sigm[i] = Sig.trace()/2.;
+      for ( size_t k = 0 ; k < a_Sig.shape()[1] ; ++k )
+      {
+        // - strain tensor
+        auto Sig = xt::view(a_Sig, e, k, xt::all(), xt::all());
+        // - trace
+        a_sigm(e,k) = trace(Sig)/ND;
+      }
     }
   }
-
-  return a_sigm;
 }
 
-// ------------------------------ equivalent stress deviator - matrix ------------------------------
+// -------------------------------- hydrostatic strain - interface ---------------------------------
 
-inline ArrD sigd(const ArrD &a_Sig)
+inline xt::xtensor<double,2> sigm(const xt::xtensor<double,4> &a_Sig)
 {
-  // number of tensor-components
-  static const size_t ncomp = 3;
-  // number of entries
-  size_t N = a_Sig.size() / ncomp;
+  xt::xtensor<double,2> out = xt::empty<double>({a_Sig.shape()[0], a_Sig.shape()[1]});
 
+  sigm(a_Sig, out);
+
+  return out;
+}
+
+// --------------------------------- equivalent deviatoric strain ----------------------------------
+
+inline void sigd(const xt::xtensor<double,4> &a_Sig, xt::xtensor<double,2> &a_sigd)
+{
   // check input
-  assert( a_Sig.rank()    >= 2     );
-  assert( a_Sig.shape(-1) == ncomp );
-
-  // allocate output: matrix of scalars (shape of the input matrix, without tensor-components)
-  ArrD a_sigd(cppmat::del(a_Sig.shape(),-1));
+  assert( a_Sig.shape()[2] == ndim );
+  assert( a_Sig.shape()[3] == ndim );
 
   // start threads (all allocated variables inside this block are local to each thread)
   #pragma omp parallel
   {
     // loop over all points
     #pragma omp for
-    for ( size_t i = 0 ; i < N ; ++i )
+    for ( size_t e = 0 ; e < a_Sig.shape()[0] ; ++e )
     {
-      // map from matrix of strains
-      T2s Sig = T2s::Copy(a_Sig.index(i*ncomp));
-      // compute the stress deviator
-      T2s Sigd = Sig - Sig.trace()/2. * T2d::I();
-      // compute/store the equivalent stress deviator
-      a_sigd[i] = std::sqrt(2.*Sigd.ddot(Sigd));
+      for ( size_t k = 0 ; k < a_Sig.shape()[1] ; ++k )
+      {
+        // - strain tensor
+        auto Sig = xt::view(a_Sig, e, k, xt::all(), xt::all());
+        // - strain deviator
+        auto Sigd = Sig - trace(Sig)/ND * xt::eye(ndim);
+        // - trace
+        a_sigd(e,k) = std::sqrt(2.*ddot(Sigd,Sigd));
+      }
     }
   }
-
-  return a_sigd;
 }
 
-// ----------------------------------- stress deviator - matrix ------------------------------------
+// --------------------------- equivalent deviatoric strain - interface ----------------------------
 
-inline ArrD Sigd(const ArrD &a_Sig)
+inline xt::xtensor<double,2> sigd(const xt::xtensor<double,4> &a_Sig)
 {
-  // number of tensor-components
-  static const size_t ncomp = 3;
-  // number of entries
-  size_t N = a_Sig.size() / ncomp;
+  xt::xtensor<double,2> out = xt::empty<double>({a_Sig.shape()[0], a_Sig.shape()[1]});
 
+  sigd(a_Sig, out);
+
+  return out;
+}
+
+// ---------------------------------------- strain deviator ----------------------------------------
+
+inline void Sigd(const xt::xtensor<double,4> &a_Sig, xt::xtensor<double,4> &a_Sigd)
+{
   // check input
-  assert( a_Sig.rank()    >= 2     );
-  assert( a_Sig.shape(-1) == ncomp );
-
-  // allocate output: matrix of tensors
-  ArrD a_Sigd(a_Sig.shape());
-
-  // iterators
-  auto i_Sigd = a_Sigd.begin();
+  assert( a_Sig .shape()[2] == ndim );
+  assert( a_Sig .shape()[3] == ndim );
+  assert( a_Sigd.shape()[2] == ndim );
+  assert( a_Sigd.shape()[3] == ndim );
 
   // start threads (all allocated variables inside this block are local to each thread)
   #pragma omp parallel
   {
     // loop over all points
     #pragma omp for
-    for ( size_t i = 0 ; i < N ; ++i )
+    for ( size_t e = 0 ; e < a_Sig.shape()[0] ; ++e )
     {
-      // map from matrix of strains
-      T2s Sig = T2s::Copy(a_Sig.index(i*ncomp));
-      // compute the stress deviator
-      T2s Sigd = Sig - Sig.trace()/2. * T2d::I();
-      // store the stress deviator
-      std::copy(Sigd.begin(), Sigd.end(), i_Sigd+i*ncomp);
+      for ( size_t k = 0 ; k < a_Sig.shape()[1] ; ++k )
+      {
+        // - strain tensor
+        auto Sig  = xt::view(a_Sig , e, k, xt::all(), xt::all());
+        auto Sigd = xt::view(a_Sigd, e, k, xt::all(), xt::all());
+        // - strain deviator
+        Sigd = Sig - trace(Sig)/ND * xt::eye(ndim);
+      }
     }
   }
+}
 
-  return a_Sigd;
+// ---------------------------------- strain deviator - interface ----------------------------------
+
+inline xt::xtensor<double,4> Sigd(const xt::xtensor<double,4> &a_Sig)
+{
+  xt::xtensor<double,4> out = xt::empty<double>(a_Sig.shape());
+
+  Sigd(a_Sig, out);
+
+  return out;
 }
 
 // =================================================================================================
