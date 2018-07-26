@@ -4,8 +4,8 @@
 
 ================================================================================================= */
 
-#ifndef ELASTOPLASTICQPOT_CARTESIAN2D_CPP
-#define ELASTOPLASTICQPOT_CARTESIAN2D_CPP
+#ifndef ELASTOPLASTICQPOT_CARTESIAN2D_HPP
+#define ELASTOPLASTICQPOT_CARTESIAN2D_HPP
 
 // -------------------------------------------------------------------------------------------------
 

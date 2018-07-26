@@ -18,7 +18,7 @@ namespace Cartesian2d {
 
 // ------------------------------------------ constructor ------------------------------------------
 
-Matrix::Matrix(const std::vector<size_t> &shape)
+inline Matrix::Matrix(const std::vector<size_t> &shape)
 {
   // resize type and index look-up
   m_type .resize(shape);
