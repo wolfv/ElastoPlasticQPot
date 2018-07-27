@@ -36,19 +36,19 @@ typedef SM::T2s T2s;
 
 // -------------------------------------------------------------------------------------------------
 
-sm.def("epsm", py::overload_cast<const T2s &>(&SM::epsm), "Mean strain"        , py::arg("Eps"));
+sm.def("epsm", py::overload_cast<const T2s &>(&SM::epsm), "Hydrostatic strain" , py::arg("Eps"));
 sm.def("epsd", py::overload_cast<const T2s &>(&SM::epsd), "Eq. strain deviator", py::arg("Eps"));
 sm.def("Epsd", py::overload_cast<const T2s &>(&SM::Epsd), "Strain deviator"    , py::arg("Eps"));
 
-sm.def("sigm", py::overload_cast<const T2s &>(&SM::sigm), "Mean stress"        , py::arg("Sig"));
+sm.def("sigm", py::overload_cast<const T2s &>(&SM::sigm), "Hydrostatic stress" , py::arg("Sig"));
 sm.def("sigd", py::overload_cast<const T2s &>(&SM::sigd), "Eq. stress deviator", py::arg("Sig"));
 sm.def("Sigd", py::overload_cast<const T2s &>(&SM::Sigd), "Stress deviator"    , py::arg("Sig"));
 
-sm.def("epsm", py::overload_cast<const xt::xtensor<double,4> &>(&SM::epsm), "Mean strain"        , py::arg("Eps"));
+sm.def("epsm", py::overload_cast<const xt::xtensor<double,4> &>(&SM::epsm), "Hydrostatic strain" , py::arg("Eps"));
 sm.def("epsd", py::overload_cast<const xt::xtensor<double,4> &>(&SM::epsd), "Eq. strain deviator", py::arg("Eps"));
 sm.def("Epsd", py::overload_cast<const xt::xtensor<double,4> &>(&SM::Epsd), "Strain deviator"    , py::arg("Eps"));
 
-sm.def("sigm", py::overload_cast<const xt::xtensor<double,4> &>(&SM::sigm), "Mean stress"        , py::arg("Sig"));
+sm.def("sigm", py::overload_cast<const xt::xtensor<double,4> &>(&SM::sigm), "Hydrostatic stress" , py::arg("Sig"));
 sm.def("sigd", py::overload_cast<const xt::xtensor<double,4> &>(&SM::sigd), "Eq. stress deviator", py::arg("Sig"));
 sm.def("Sigd", py::overload_cast<const xt::xtensor<double,4> &>(&SM::Sigd), "Stress deviator"    , py::arg("Sig"));
 
@@ -152,18 +152,13 @@ py::class_<SM::Matrix>(sm, "Matrix")
   .def("setCusp"   , py::overload_cast<const xt::xtensor<size_t,2> &, const xt::xtensor<size_t,2> &, const xt::xtensor<double,1> &, const xt::xtensor<double,1> &, const xt::xtensor<double,2> &, bool>(&SM::Matrix::setCusp   ),py::arg("I"),py::arg("idx"),py::arg("K"),py::arg("G"),py::arg("epsy"),py::arg("init_elastic")=true)
   .def("setSmooth" , py::overload_cast<const xt::xtensor<size_t,2> &, const xt::xtensor<size_t,2> &, const xt::xtensor<double,1> &, const xt::xtensor<double,1> &, const xt::xtensor<double,2> &, bool>(&SM::Matrix::setSmooth ),py::arg("I"),py::arg("idx"),py::arg("K"),py::arg("G"),py::arg("epsy"),py::arg("init_elastic")=true)
   .def("shape"     , py::overload_cast<size_t>(&SM::Matrix::shape, py::const_))
-  .def("shape"     , py::overload_cast<      >(&SM::Matrix::shape, py::const_))
-  .def("type"      , &SM::Matrix::type)
+  .def("shape"     , py::overload_cast<>      (&SM::Matrix::shape, py::const_))
+  .def("type"      ,                           &SM::Matrix::type)
   .def("Sig"       , py::overload_cast<const xt::xtensor<double,4> &>(&SM::Matrix::Sig   , py::const_), py::arg("a_Eps"))
   .def("energy"    , py::overload_cast<const xt::xtensor<double,4> &>(&SM::Matrix::energy, py::const_), py::arg("a_Eps"))
   .def("find"      , py::overload_cast<const xt::xtensor<double,4> &>(&SM::Matrix::find  , py::const_), py::arg("a_Eps"))
   .def("epsy"      , py::overload_cast<const xt::xtensor<size_t,2> &>(&SM::Matrix::epsy  , py::const_), py::arg("a_idx"))
   .def("epsp"      , py::overload_cast<const xt::xtensor<double,4> &>(&SM::Matrix::epsp  , py::const_), py::arg("a_Eps"))
-  // .def("Sig"       , py::overload_cast<const xt::xtensor<double,4> &, xt::xtensor<double,4> &>(&SM::Matrix::Sig   , py::const_), py::arg("a_Eps"), py::arg("a_Sig   "))
-  // .def("energy"    , py::overload_cast<const xt::xtensor<double,4> &, xt::xtensor<double,2> &>(&SM::Matrix::energy, py::const_), py::arg("a_Eps"), py::arg("a_energy"))
-  // .def("find"      , py::overload_cast<const xt::xtensor<double,4> &, xt::xtensor<size_t,2> &>(&SM::Matrix::find  , py::const_), py::arg("a_Eps"), py::arg("a_find  "))
-  // .def("epsy"      , py::overload_cast<const xt::xtensor<size_t,2> &, xt::xtensor<double,2> &>(&SM::Matrix::epsy  , py::const_), py::arg("a_idx"), py::arg("a_epsy  "))
-  // .def("epsp"      , py::overload_cast<const xt::xtensor<double,4> &, xt::xtensor<double,2> &>(&SM::Matrix::epsp  , py::const_), py::arg("a_Eps"), py::arg("a_epsp  "))
   // print to screen
   .def("__repr__", [](const SM::Matrix &){
     return "<ElastoPlasticQPot.Cartesian2d.Matrix>"; });
