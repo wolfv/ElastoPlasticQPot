@@ -1,6 +1,6 @@
 
 import GooseTensor       as gt
-import GooseMaterial     as gm
+import ElastoPlasticQPot as gm
 import numpy             as np
 import matplotlib.pyplot as plt
 
@@ -13,7 +13,7 @@ fig.set_tight_layout(True)
 
 # --------------------------------------------------------------------------------------------------
 
-mat = gm.AmorphousSolid.LinearStrain.ElastoPlastic.Cartesian2d.Material( 1. , 1. , [ -1. , 1. , 1.5 , 3. , 6. , 10.1 ] , False )
+mat = gm.Cartesian2d.Cusp( 1. , 1. , [ -1. , 1. , 1.5 , 3. , 6. , 10.1 ] , False )
 
 Eps = np.array([
   [ 0. , 1. ],
@@ -29,7 +29,7 @@ for i,d in enumerate(np.linspace(0,10.,ninc)):
 
   eps       = d * Eps
   energy[i] = mat.energy(eps)
-  sig       = mat.stress(eps)
+  sig       = mat.Sig(eps)
   sig_xy[i] = sig[0,1]
   eps_xy[i] = eps[0,1]
 
@@ -49,7 +49,7 @@ plt.ylabel(r'$E$')
 
 # --------------------------------------------------------------------------------------------------
 
-mat = gm.AmorphousSolid.LinearStrain.ElastoPlastic.Smooth.Cartesian2d.Material( 1. , 1. , [ -1. , 1. , 1.5 , 3. , 6. , 10.1 ] , False )
+mat = gm.Cartesian2d.Smooth( 1. , 1. , [ -1. , 1. , 1.5 , 3. , 6. , 10.1 ] , False )
 
 Eps = np.array([
   [ 0. , 1. ],
@@ -65,7 +65,7 @@ for i,d in enumerate(np.linspace(0,10.,ninc)):
 
   eps       = d * Eps
   energy[i] = mat.energy(eps)
-  sig       = mat.stress(eps)
+  sig       = mat.Sig(eps)
   sig_xy[i] = sig[0,1]
   eps_xy[i] = eps[0,1]
 

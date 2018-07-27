@@ -101,7 +101,7 @@ inline void epsm(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_ep
       {
         // - strain tensor
         auto Eps = xt::view(a_Eps, e, k, xt::all(), xt::all());
-        // - trace
+        // - equivalent value
         a_epsm(e,k) = trace(Eps)/ND;
       }
     }
@@ -140,7 +140,7 @@ inline void epsd(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_ep
         auto Eps = xt::view(a_Eps, e, k, xt::all(), xt::all());
         // - strain deviator
         auto Epsd = Eps - trace(Eps)/ND * xt::eye(ndim);
-        // - trace
+        // - equivalent value
         a_epsd(e,k) = std::sqrt(.5*ddot(Epsd,Epsd));
       }
     }
@@ -217,7 +217,7 @@ inline void sigm(const xt::xtensor<double,4> &a_Sig, xt::xtensor<double,2> &a_si
       {
         // - strain tensor
         auto Sig = xt::view(a_Sig, e, k, xt::all(), xt::all());
-        // - trace
+        // - equivalent value
         a_sigm(e,k) = trace(Sig)/ND;
       }
     }
@@ -256,7 +256,7 @@ inline void sigd(const xt::xtensor<double,4> &a_Sig, xt::xtensor<double,2> &a_si
         auto Sig = xt::view(a_Sig, e, k, xt::all(), xt::all());
         // - strain deviator
         auto Sigd = Sig - trace(Sig)/ND * xt::eye(ndim);
-        // - trace
+        // - equivalent value
         a_sigd(e,k) = std::sqrt(2.*ddot(Sigd,Sigd));
       }
     }
@@ -310,6 +310,152 @@ inline xt::xtensor<double,4> Sigd(const xt::xtensor<double,4> &a_Sig)
   xt::xtensor<double,4> out = xt::empty<double>(a_Sig.shape());
 
   Sigd(a_Sig, out);
+
+  return out;
+}
+
+// ============================================ MAXIMUM ============================================
+
+// -------------------------------------- hydrostatic strain ---------------------------------------
+
+inline double epsm_max(const xt::xtensor<double,4> &a_Eps)
+{
+  // check input
+  assert( a_Eps.shape()[2] == ndim );
+  assert( a_Eps.shape()[3] == ndim );
+
+  // allocate maximum
+  double out;
+
+  // compute one point
+  {
+    // - strain tensor
+    auto Eps = xt::view(a_Eps, 0, 0, xt::all(), xt::all());
+    // - equivalent value
+    out = trace(Eps)/ND;
+  }
+
+  // loop over all points
+  for ( size_t e = 0 ; e < a_Eps.shape()[0] ; ++e )
+  {
+    for ( size_t k = 0 ; k < a_Eps.shape()[1] ; ++k )
+    {
+      // - strain tensor
+      auto Eps = xt::view(a_Eps, e, k, xt::all(), xt::all());
+      // - equivalent value
+      out = std::max(out, trace(Eps)/ND);
+    }
+  }
+
+  return out;
+}
+
+// -------------------------------------- hydrostatic stress ---------------------------------------
+
+inline double sigm_max(const xt::xtensor<double,4> &a_Sig)
+{
+  // check input
+  assert( a_Sig.shape()[2] == ndim );
+  assert( a_Sig.shape()[3] == ndim );
+
+  // allocate maximum
+  double out;
+
+  // compute one point
+  {
+    // - stress tensor
+    auto Sig = xt::view(a_Sig, 0, 0, xt::all(), xt::all());
+    // - equivalent value
+    out = trace(Sig)/ND;
+  }
+
+  // loop over all points
+  for ( size_t e = 0 ; e < a_Sig.shape()[0] ; ++e )
+  {
+    for ( size_t k = 0 ; k < a_Sig.shape()[1] ; ++k )
+    {
+      // - stress tensor
+      auto Sig = xt::view(a_Sig, e, k, xt::all(), xt::all());
+      // - equivalent value
+      out = std::max(out, trace(Sig)/ND);
+    }
+  }
+
+  return out;
+}
+
+// --------------------------------- equivalent deviatoric strain ----------------------------------
+
+inline double epsd_max(const xt::xtensor<double,4> &a_Eps)
+{
+  // check input
+  assert( a_Eps.shape()[2] == ndim );
+  assert( a_Eps.shape()[3] == ndim );
+
+  // allocate maximum
+  double out;
+
+  // compute one point
+  {
+    // - strain tensor
+    auto Eps = xt::view(a_Eps, 0, 0, xt::all(), xt::all());
+    // - strain deviator
+    auto Epsd = Eps - trace(Eps)/ND * xt::eye(ndim);
+    // - equivalent value
+    out = std::sqrt(.5*ddot(Epsd,Epsd));
+  }
+
+  // loop over all points
+  for ( size_t e = 0 ; e < a_Eps.shape()[0] ; ++e )
+  {
+    for ( size_t k = 0 ; k < a_Eps.shape()[1] ; ++k )
+    {
+      // - strain tensor
+      auto Eps = xt::view(a_Eps, e, k, xt::all(), xt::all());
+      // - strain deviator
+      auto Epsd = Eps - trace(Eps)/ND * xt::eye(ndim);
+      // - equivalent value
+      out = std::max(out, std::sqrt(.5*ddot(Epsd,Epsd)));
+    }
+  }
+
+  return out;
+}
+
+// --------------------------------- equivalent deviatoric stress ----------------------------------
+
+inline double sigd_max(const xt::xtensor<double,4> &a_Sig)
+{
+  // check input
+  assert( a_Sig.shape()[2] == ndim );
+  assert( a_Sig.shape()[3] == ndim );
+
+  // allocate maximum
+  double out;
+
+  // compute one point
+  {
+    // - stress tensor
+    auto Sig = xt::view(a_Sig, 0, 0, xt::all(), xt::all());
+    // - stress deviator
+    auto Sigd = Sig - trace(Sig)/ND * xt::eye(ndim);
+    // - equivalent value
+    out = std::sqrt(.5*ddot(Sigd,Sigd));
+  }
+
+  // loop over all points
+  for ( size_t e = 0 ; e < a_Sig.shape()[0] ; ++e )
+  {
+    for ( size_t k = 0 ; k < a_Sig.shape()[1] ; ++k )
+    {
+      // - stress tensor
+      auto Sig = xt::view(a_Sig, e, k, xt::all(), xt::all());
+      // - stress deviator
+      auto Sigd = Sig - trace(Sig)/ND * xt::eye(ndim);
+      // - equivalent value
+      out = std::max(out, std::sqrt(2.*ddot(Sigd,Sigd)));
+    }
+  }
 
   return out;
 }

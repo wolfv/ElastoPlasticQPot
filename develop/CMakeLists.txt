@@ -34,9 +34,6 @@ if(NOT "$ENV{INCLUDE_PATH}" STREQUAL "")
   include_directories(SYSTEM ${INCLUDE_LIST})
 endif()
 
-# find_package(xtensor COMPONENTS CXX REQUIRED)
-# include_directories(SYSTEM ${xtensor_INCLUDE_DIRS})
-
 # compile
 # -------
 

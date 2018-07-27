@@ -45,29 +45,27 @@ inline T2s Epsd(const T2s &Eps);
 
 // ----------------------- equivalent stress/strain (Cartesian2d_Matrix.cpp) -----------------------
 
-// mean (no allocation)
+// no allocation
 inline void sigm(const xt::xtensor<double,4> &a_Sig, xt::xtensor<double,2> &a_sigm);
 inline void epsm(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_epsm);
-
-// equivalent deviator (no allocation)
 inline void sigd(const xt::xtensor<double,4> &a_Sig, xt::xtensor<double,2> &a_sigd);
 inline void epsd(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_epsd);
-
-// deviator (no allocation)
 inline void Sigd(const xt::xtensor<double,4> &a_Sig, xt::xtensor<double,4> &a_Sigd);
 inline void Epsd(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4> &a_Epsd);
 
-// mean
+// allocation
 inline xt::xtensor<double,2> sigm(const xt::xtensor<double,4> &a_Sig);
 inline xt::xtensor<double,2> epsm(const xt::xtensor<double,4> &a_Eps);
-
-// equivalent deviator
 inline xt::xtensor<double,2> sigd(const xt::xtensor<double,4> &a_Sig);
 inline xt::xtensor<double,2> epsd(const xt::xtensor<double,4> &a_Eps);
-
-// deviator
 inline xt::xtensor<double,4> Sigd(const xt::xtensor<double,4> &a_Sig);
 inline xt::xtensor<double,4> Epsd(const xt::xtensor<double,4> &a_Eps);
+
+// maximum
+inline double sigm_max(const xt::xtensor<double,4> &a_Sig);
+inline double epsm_max(const xt::xtensor<double,4> &a_Eps);
+inline double sigd_max(const xt::xtensor<double,4> &a_Sig);
+inline double epsd_max(const xt::xtensor<double,4> &a_Eps);
 
 // ---------------------- material point - elastic (Cartesian2d_Elastic.cpp) -----------------------
 
