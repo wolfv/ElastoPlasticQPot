@@ -40,9 +40,9 @@ inline double Elastic::G() const
 
 inline double Elastic::epsd(const T2s &Eps) const
 {
-  T2s Epsd = Eps - Eps.trace()/2. * T2d::I();
+  auto Epsd = Eps - trace(Eps)/ND * xt::eye(ndim);
 
-  return std::sqrt(.5*Epsd.ddot(Epsd));
+  return std::sqrt(.5*ddot(Epsd,Epsd));
 }
 
 // ----------------------------------- equivalent plastic strain -----------------------------------
@@ -95,12 +95,11 @@ inline size_t Elastic::find(double epsd) const
 inline T2s Elastic::Sig(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
-  T2d    I    = T2d::I();
-  double epsm = Eps.trace()/2.;
-  T2s    Epsd = Eps - epsm * I;
+  auto epsm = trace(Eps)/ND;
+  auto Epsd = Eps - epsm * xt::eye(ndim);
 
   // return stress tensor
-  return ( m_K * epsm ) * I + m_G * Epsd;
+  return m_K * epsm * xt::eye(ndim) + m_G * Epsd;
 }
 
 // -------------------------------------------- energy ---------------------------------------------
@@ -108,14 +107,14 @@ inline T2s Elastic::Sig(const T2s &Eps) const
 inline double Elastic::energy(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
-  double epsm = Eps.trace()/2.;
-  T2s    Epsd = Eps - epsm * T2d::I();
-  double epsd = std::sqrt(.5*Epsd.ddot(Epsd));
+  auto epsm = trace(Eps)/ND;
+  auto Epsd = Eps - epsm * xt::eye(ndim);
+  auto epsd = std::sqrt(.5*ddot(Epsd,Epsd));
 
   // hydrostatic part of the energy
-  double U = m_K * std::pow(epsm,2.);
+  auto U = m_K * std::pow(epsm,2.);
   // deviatoric part of the energy
-  double V = m_G * std::pow(epsd,2.);
+  auto V = m_G * std::pow(epsd,2.);
 
   // return total energy
   return U + V;

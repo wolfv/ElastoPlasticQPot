@@ -29,6 +29,7 @@ Sig = mat.Sig(Eps)
 EQ( Sig[0,0], K * epsm  )
 EQ( Sig[1,1], K * epsm  )
 EQ( Sig[0,1], G * gamma )
+EQ( Sig[1,0], G * gamma )
 # - plastic strain
 EQ( mat.epsp(Eps), 0 )
 # - yield strain index
@@ -56,6 +57,7 @@ Sig = mat.Sig(Eps)
 EQ( Sig[0,0], K * epsm )
 EQ( Sig[1,1], K * epsm )
 EQ( Sig[0,1], G * 0.   )
+EQ( Sig[1,0], G * 0.   )
 # - plastic strain
 EQ( mat.epsp(Eps), 0.02 )
 # - yield strain index
@@ -83,6 +85,7 @@ Sig = mat.Sig(Eps)
 EQ( Sig[0,0], K * epsm )
 EQ( Sig[1,1], K * epsm )
 EQ( Sig[0,1], G * 0.   )
+EQ( Sig[1,0], G * 0.   )
 # - plastic strain
 EQ( mat.epsp(Eps), 0.02 )
 # - yield strain index
@@ -117,24 +120,28 @@ mat.setSmooth(I,K,G,[0.01,0.03,0.10])
 gamma = 0.02;
 epsm  = 0.12;
 # - strain
-Eps        = np.zeros((3,2,3))
-Eps[:,:,0] = epsm
-Eps[:,:,1] = gamma
-Eps[:,:,2] = epsm
+Eps          = np.zeros((3,2,2,2))
+Eps[:,:,0,0] = epsm
+Eps[:,:,1,1] = epsm
+Eps[:,:,0,1] = gamma
+Eps[:,:,1,0] = gamma
 # - stress & plastic strain
 Sig  = mat.Sig (Eps)
 epsp = mat.epsp(Eps)
 
 # - analytical solution
-EQ( Sig[0,0,0], K * epsm ); EQ( Sig[0,1,0], K * epsm )
-EQ( Sig[0,0,2], K * epsm ); EQ( Sig[0,1,2], K * epsm )
-EQ( Sig[0,0,1], G * gamma); EQ( Sig[0,1,1], G * gamma)
-EQ( Sig[1,0,0], K * epsm ); EQ( Sig[1,1,0], K * epsm )
-EQ( Sig[1,0,2], K * epsm ); EQ( Sig[1,1,2], K * epsm )
-EQ( Sig[1,0,1], G * 0.   ); EQ( Sig[1,1,1], G * 0.   )
-EQ( Sig[2,0,0], K * epsm ); EQ( Sig[2,1,0], K * epsm )
-EQ( Sig[2,0,2], K * epsm ); EQ( Sig[2,1,2], K * epsm )
-EQ( Sig[2,0,1], G * 0.   ); EQ( Sig[2,1,1], G * 0.   )
+EQ( Sig[0,0,0,0], K * epsm ); EQ( Sig[0,1,0,0], K * epsm )
+EQ( Sig[0,0,1,1], K * epsm ); EQ( Sig[0,1,1,1], K * epsm )
+EQ( Sig[0,0,0,1], G * gamma); EQ( Sig[0,1,0,1], G * gamma)
+EQ( Sig[0,0,0,1], G * gamma); EQ( Sig[0,1,1,0], G * gamma)
+EQ( Sig[1,0,0,0], K * epsm ); EQ( Sig[1,1,0,0], K * epsm )
+EQ( Sig[1,0,1,1], K * epsm ); EQ( Sig[1,1,1,1], K * epsm )
+EQ( Sig[1,0,0,1], G * 0.   ); EQ( Sig[1,1,0,1], G * 0.   )
+EQ( Sig[1,0,0,1], G * 0.   ); EQ( Sig[1,1,1,0], G * 0.   )
+EQ( Sig[2,0,0,0], K * epsm ); EQ( Sig[2,1,0,0], K * epsm )
+EQ( Sig[2,0,1,1], K * epsm ); EQ( Sig[2,1,1,1], K * epsm )
+EQ( Sig[2,0,0,1], G * 0.   ); EQ( Sig[2,1,0,1], G * 0.   )
+EQ( Sig[2,0,0,1], G * 0.   ); EQ( Sig[2,1,1,0], G * 0.   )
 # - plastic strain
 EQ( epsp[0,0], 0    ); EQ( epsp[0,1], 0    )
 EQ( epsp[1,0], gamma); EQ( epsp[1,1], gamma)

@@ -28,19 +28,11 @@ endif()
 # load packages
 # -------------
 
-# load pkg-config
-find_package(PkgConfig)
-
-# load header-only modules using pkg-config
-# - cppmat
-pkg_check_modules(CPPMAT REQUIRED cppmat)
-include_directories(${CPPMAT_INCLUDE_DIRS})
-# - eigen3
-pkg_check_modules(EIGEN3 REQUIRED eigen3)
-include_directories(SYSTEM ${EIGEN3_INCLUDE_DIRS})
-# - ElastoPlasticQPot
-pkg_check_modules(ELASTOPLASTICQPOT REQUIRED ElastoPlasticQPot)
-include_directories(${ELASTOPLASTICQPOT_INCLUDE_DIRS})
+# add custom paths
+if(NOT "$ENV{INCLUDE_PATH}" STREQUAL "")
+  string(REPLACE ":" ";" INCLUDE_LIST "$ENV{INCLUDE_PATH}")
+  include_directories(SYSTEM ${INCLUDE_LIST})
+endif()
 
 # compile
 # -------
