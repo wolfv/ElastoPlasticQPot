@@ -44,13 +44,13 @@ sm.def("sigm", py::overload_cast<const T2s &>(&SM::sigm), "Hydrostatic stress" ,
 sm.def("sigd", py::overload_cast<const T2s &>(&SM::sigd), "Eq. stress deviator", py::arg("Sig"));
 sm.def("Sigd", py::overload_cast<const T2s &>(&SM::Sigd), "Stress deviator"    , py::arg("Sig"));
 
-sm.def("epsm", py::overload_cast<const xt::xtensor<double,4> &>(&SM::epsm), "Hydrostatic strain" , py::arg("Eps"));
-sm.def("epsd", py::overload_cast<const xt::xtensor<double,4> &>(&SM::epsd), "Eq. strain deviator", py::arg("Eps"));
-sm.def("Epsd", py::overload_cast<const xt::xtensor<double,4> &>(&SM::Epsd), "Strain deviator"    , py::arg("Eps"));
+sm.def("epsm", py::overload_cast<const xt::xtensor<double,4> &>(&SM::epsm), "Hydrostatic strain" , py::arg("a_Eps"));
+sm.def("epsd", py::overload_cast<const xt::xtensor<double,4> &>(&SM::epsd), "Eq. strain deviator", py::arg("a_Eps"));
+sm.def("Epsd", py::overload_cast<const xt::xtensor<double,4> &>(&SM::Epsd), "Strain deviator"    , py::arg("a_Eps"));
 
-sm.def("sigm", py::overload_cast<const xt::xtensor<double,4> &>(&SM::sigm), "Hydrostatic stress" , py::arg("Sig"));
-sm.def("sigd", py::overload_cast<const xt::xtensor<double,4> &>(&SM::sigd), "Eq. stress deviator", py::arg("Sig"));
-sm.def("Sigd", py::overload_cast<const xt::xtensor<double,4> &>(&SM::Sigd), "Stress deviator"    , py::arg("Sig"));
+sm.def("sigm", py::overload_cast<const xt::xtensor<double,4> &>(&SM::sigm), "Hydrostatic stress" , py::arg("a_Sig"));
+sm.def("sigd", py::overload_cast<const xt::xtensor<double,4> &>(&SM::sigd), "Eq. stress deviator", py::arg("a_Sig"));
+sm.def("Sigd", py::overload_cast<const xt::xtensor<double,4> &>(&SM::Sigd), "Stress deviator"    , py::arg("a_Sig"));
 
 // -------------------------------------------------------------------------------------------------
 
