@@ -155,7 +155,7 @@ inline T2s Cusp::Sig(const T2s &Eps) const
   auto eps_min = ( m_epsy[i+1] + m_epsy[i] ) / 2.;
 
   // return stress tensor
-  return m_K * epsm * xt::eye(ndim) + ( m_G * (1.-eps_min/epsd) ) * Epsd;
+  return m_K * epsm * xt::eye(ndim) + m_G * (1.-eps_min/epsd) * Epsd;
 }
 
 // -------------------------------------------- energy ---------------------------------------------

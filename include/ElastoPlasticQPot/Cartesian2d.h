@@ -23,11 +23,10 @@ static const double ND   = 2.;
 
 using T2s = xt::xtensor_fixed<double, xt::xshape<ndim,ndim>>;
 
-
 // ---------------------------------------- tensor algebra -----------------------------------------
 
-double trace(const T2s &A);
-double ddot (const T2s &A, const T2s &B);
+inline double trace(const T2s &A);
+inline double ddot (const T2s &A, const T2s &B);
 
 // -------------------------- equivalent stress/strain (Cartesian2d.cpp) ---------------------------
 
@@ -53,7 +52,7 @@ inline void epsd(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_ep
 inline void Sigd(const xt::xtensor<double,4> &a_Sig, xt::xtensor<double,4> &a_Sigd);
 inline void Epsd(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4> &a_Epsd);
 
-// allocation
+// return allocated result
 inline xt::xtensor<double,2> sigm(const xt::xtensor<double,4> &a_Sig);
 inline xt::xtensor<double,2> epsm(const xt::xtensor<double,4> &a_Eps);
 inline xt::xtensor<double,2> sigd(const xt::xtensor<double,4> &a_Sig);
@@ -61,7 +60,7 @@ inline xt::xtensor<double,2> epsd(const xt::xtensor<double,4> &a_Eps);
 inline xt::xtensor<double,4> Sigd(const xt::xtensor<double,4> &a_Sig);
 inline xt::xtensor<double,4> Epsd(const xt::xtensor<double,4> &a_Eps);
 
-// maximum
+// compute maximum, avoiding allocation
 inline double sigm_max(const xt::xtensor<double,4> &a_Sig);
 inline double epsm_max(const xt::xtensor<double,4> &a_Eps);
 inline double sigd_max(const xt::xtensor<double,4> &a_Sig);
@@ -274,7 +273,7 @@ public:
   void epsy  (const xt::xtensor<size_t,2> &a_idx, xt::xtensor<double,2> &a_epsy  ) const;
   void epsp  (const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_epsp  ) const;
 
-  // compute
+  // compute (return allocated result)
   xt::xtensor<double,4> Sig   (const xt::xtensor<double,4> &a_Eps) const;
   xt::xtensor<double,2> energy(const xt::xtensor<double,4> &a_Eps) const;
   xt::xtensor<size_t,2> find  (const xt::xtensor<double,4> &a_Eps) const;

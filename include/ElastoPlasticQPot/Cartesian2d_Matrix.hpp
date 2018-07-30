@@ -32,11 +32,7 @@ inline Matrix::Matrix(const std::vector<size_t> &shape)
 
 inline std::vector<size_t> Matrix::shape() const
 {
-  std::vector<size_t> out(m_type.dimension());
-
-  for ( size_t i = 0 ; i < out.size() ; ++i ) out[i] = m_type.shape()[i];
-
-  return out;
+  return std::vector<size_t>(m_type.shape().begin(), m_type.shape().end());
 }
 
 // --------------------------------------------- shape ---------------------------------------------

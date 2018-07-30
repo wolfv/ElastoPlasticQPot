@@ -20,14 +20,14 @@ namespace Cartesian2d {
 
 // --------------------------------------------- trace ---------------------------------------------
 
-double trace(const T2s &A)
+inline double trace(const T2s &A)
 {
   return A(0,0) + A(1,1);
 }
 
 // -------------------------------------- double dot product ---------------------------------------
 
-double ddot(const T2s &A, const T2s &B)
+inline double ddot(const T2s &A, const T2s &B)
 {
   return A(0,0) * B(0,0) + 2.0 * A(0,1) * B(0,1) + A(1,1) * B(1,1);
 }

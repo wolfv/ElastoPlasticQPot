@@ -31,13 +31,14 @@ SECTION( "Elastic" )
   double gamma = 0.02;
   double epsm  = 0.12;
   // - strain
-  Eps(0,0) = Eps(1,1) = epsm; Eps(0,1) = gamma;
+  Eps(0,0) = Eps(1,1) = epsm; Eps(0,1) = Eps(1,0) = gamma;
   // - stress
   Sig = mat.Sig(Eps);
   // - analytical solution
   EQ( Sig(0,0), K * epsm  );
   EQ( Sig(1,1), K * epsm  );
   EQ( Sig(0,1), G * gamma );
+  EQ( Sig(1,0), G * gamma );
   // - plastic strain
   EQ( mat.epsp(Eps), 0 );
   // - yield strain index
@@ -63,13 +64,14 @@ SECTION( "Cusp" )
   double gamma = 0.02;
   double epsm  = 0.12;
   // - strain
-  Eps(0,0) = Eps(1,1) = epsm; Eps(0,1) = gamma;
+  Eps(0,0) = Eps(1,1) = epsm; Eps(0,1) = Eps(1,0) = gamma;
   // - stress
   Sig = mat.Sig(Eps);
   // - analytical solution
   EQ( Sig(0,0), K * epsm );
   EQ( Sig(1,1), K * epsm );
-  EQ( Sig(0,1), G * 0.   );
+  EQ( Sig(0,1), 0.       );
+  EQ( Sig(1,0), 0.       );
   // - plastic strain
   EQ( mat.epsp(Eps), 0.02 );
   // - yield strain index
@@ -95,13 +97,14 @@ SECTION( "Smooth" )
   double gamma = 0.02;
   double epsm  = 0.12;
   // - strain
-  Eps(0,0) = Eps(1,1) = epsm; Eps(0,1) = gamma;
+  Eps(0,0) = Eps(1,1) = epsm; Eps(0,1) = Eps(1,0) = gamma;
   // - stress
   Sig = mat.Sig(Eps);
   // - analytical solution
   EQ( Sig(0,0), K * epsm );
   EQ( Sig(1,1), K * epsm );
-  EQ( Sig(0,1), G * 0.   );
+  EQ( Sig(0,1), 0.       );
+  EQ( Sig(1,0), 0.       );
   // - plastic strain
   EQ( mat.epsp(Eps), 0.02 );
   // - yield strain index
@@ -180,12 +183,12 @@ SECTION( "Matrix" )
   EQ( sig(0,0,1,0), G * gamma); EQ( sig(0,1,1,0), G * gamma);
   EQ( sig(1,0,0,0), K * epsm ); EQ( sig(1,1,0,0), K * epsm );
   EQ( sig(1,0,1,1), K * epsm ); EQ( sig(1,1,1,1), K * epsm );
-  EQ( sig(1,0,0,1), G * 0.   ); EQ( sig(1,1,0,1), G * 0.   );
-  EQ( sig(1,0,1,0), G * 0.   ); EQ( sig(1,1,1,0), G * 0.   );
+  EQ( sig(1,0,0,1), 0.       ); EQ( sig(1,1,0,1), 0.       );
+  EQ( sig(1,0,1,0), 0.       ); EQ( sig(1,1,1,0), 0.       );
   EQ( sig(2,0,0,0), K * epsm ); EQ( sig(2,1,0,0), K * epsm );
   EQ( sig(2,0,1,1), K * epsm ); EQ( sig(2,1,1,1), K * epsm );
-  EQ( sig(2,0,0,1), G * 0.   ); EQ( sig(2,1,0,1), G * 0.   );
-  EQ( sig(2,0,1,0), G * 0.   ); EQ( sig(2,1,1,0), G * 0.   );
+  EQ( sig(2,0,0,1), 0.       ); EQ( sig(2,1,0,1), 0.       );
+  EQ( sig(2,0,1,0), 0.       ); EQ( sig(2,1,1,0), 0.       );
   // - plastic strain
   EQ( epsp(0,0), 0    ); EQ( epsp(0,1), 0    );
   EQ( epsp(1,0), gamma); EQ( epsp(1,1), gamma);

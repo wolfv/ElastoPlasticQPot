@@ -156,7 +156,7 @@ inline T2s Smooth::Sig(const T2s &Eps) const
   auto deps_y  = ( m_epsy[i+1] - m_epsy[i] ) / 2.;
 
   // return stress tensor
-  return m_K*epsm*xt::eye(ndim) + ((m_G/epsd)*(deps_y/M_PI)*sin(M_PI/deps_y*(epsd-eps_min)))*Epsd;
+  return m_K*epsm*xt::eye(ndim) + (m_G/epsd)*(deps_y/M_PI)*sin(M_PI/deps_y*(epsd-eps_min))*Epsd;
 }
 
 // -------------------------------------------- energy ---------------------------------------------
