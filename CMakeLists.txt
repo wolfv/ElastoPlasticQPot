@@ -10,20 +10,20 @@ include(GNUInstallDirs)
 # ----------------
 
 # name
-project(xElastoPlasticQPot)
+project(ElastoPlasticQPot)
 
 # file that contains the version information
-set(parse_version include/xElastoPlasticQPot/ElastoPlasticQPot.h)
+set(parse_version include/ElastoPlasticQPot/ElastoPlasticQPot.h)
 
 # header files
 set(headers
-  include/xElastoPlasticQPot/ElastoPlasticQPot.h
-  include/xElastoPlasticQPot/Cartesian2d.h
-  include/xElastoPlasticQPot/Cartesian2d.hpp
-  include/xElastoPlasticQPot/Cartesian2d_Matrix.hpp
-  include/xElastoPlasticQPot/Cartesian2d_Elastic.hpp
-  include/xElastoPlasticQPot/Cartesian2d_Cusp.hpp
-  include/xElastoPlasticQPot/Cartesian2d_Smooth.hpp
+  include/ElastoPlasticQPot/ElastoPlasticQPot.h
+  include/ElastoPlasticQPot/Cartesian2d.h
+  include/ElastoPlasticQPot/Cartesian2d.hpp
+  include/ElastoPlasticQPot/Cartesian2d_Matrix.hpp
+  include/ElastoPlasticQPot/Cartesian2d_Elastic.hpp
+  include/ElastoPlasticQPot/Cartesian2d_Cusp.hpp
+  include/ElastoPlasticQPot/Cartesian2d_Smooth.hpp
 )
 
 # automatically parse the version number

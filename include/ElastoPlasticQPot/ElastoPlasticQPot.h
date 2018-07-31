@@ -4,8 +4,8 @@
 
 ================================================================================================= */
 
-#ifndef XELASTOPLASTICQPOT_H
-#define XELASTOPLASTICQPOT_H
+#ifndef ELASTOPLASTICQPOT_H
+#define ELASTOPLASTICQPOT_H
 
 // --------------------------------------- include libraries ---------------------------------------
 
@@ -16,15 +16,7 @@
 #include <stdexcept>
 #include <limits>
 #include <math.h>
-#include <iostream>
-#include <vector>
-#include <xtensor/xarray.hpp>
-#include <xtensor/xtensor.hpp>
-#include <xtensor/xfixed.hpp>
-#include <xtensor/xview.hpp>
-#include <xtensor/xio.hpp>
-#include <xtensor/xoperation.hpp>
-#include <xtensor/xmath.hpp>
+#include <cppmat/cppmat.h>
 
 // ---------------------------------------- dummy operation ----------------------------------------
 
@@ -34,13 +26,13 @@
 // -------------------------------------- version information --------------------------------------
 
 #define ELASTOPLASTICQPOT_WORLD_VERSION 0
-#define ELASTOPLASTICQPOT_MAJOR_VERSION 1
-#define ELASTOPLASTICQPOT_MINOR_VERSION 1
+#define ELASTOPLASTICQPOT_MAJOR_VERSION 0
+#define ELASTOPLASTICQPOT_MINOR_VERSION 4
 
 #define ELASTOPLASTICQPOT_VERSION_AT_LEAST(x,y,z) \
   (ELASTOPLASTICQPOT_WORLD_VERSION>x || (ELASTOPLASTICQPOT_WORLD_VERSION>=x && \
   (ELASTOPLASTICQPOT_MAJOR_VERSION>y || (ELASTOPLASTICQPOT_MAJOR_VERSION>=y && \
-                                         ELASTOPLASTICQPOT_MINOR_VERSION>=z))))
+                              ELASTOPLASTICQPOT_MINOR_VERSION>=z))))
 
 #define ELASTOPLASTICQPOT_VERSION(x,y,z) \
   (ELASTOPLASTICQPOT_WORLD_VERSION==x && \

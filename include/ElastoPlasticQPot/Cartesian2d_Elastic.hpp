@@ -4,8 +4,8 @@
 
 ================================================================================================= */
 
-#ifndef XELASTOPLASTICQPOT_CARTESIAN2D_ELASTIC_CPP
-#define XELASTOPLASTICQPOT_CARTESIAN2D_ELASTIC_CPP
+#ifndef ELASTOPLASTICQPOT_CARTESIAN2D_ELASTIC_CPP
+#define ELASTOPLASTICQPOT_CARTESIAN2D_ELASTIC_CPP
 
 // -------------------------------------------------------------------------------------------------
 
@@ -13,7 +13,7 @@
 
 // =================================================================================================
 
-namespace xElastoPlasticQPot {
+namespace ElastoPlasticQPot {
 namespace Cartesian2d {
 
 // ------------------------------------------ constructor ------------------------------------------
@@ -40,10 +40,9 @@ inline double Elastic::G() const
 
 inline double Elastic::epsd(const T2s &Eps) const
 {
-  T2s  I    = xt::eye(ndim);
-  auto Epsd = Eps - trace(Eps)/ND * I;
+  T2s Epsd = Eps - Eps.trace()/2. * T2d::I();
 
-  return std::sqrt(.5*ddot(Epsd,Epsd));
+  return std::sqrt(.5*Epsd.ddot(Epsd));
 }
 
 // ----------------------------------- equivalent plastic strain -----------------------------------
@@ -96,12 +95,12 @@ inline size_t Elastic::find(double epsd) const
 inline T2s Elastic::Sig(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
-  T2s  I    = xt::eye(ndim);
-  auto epsm = trace(Eps)/ND;
-  auto Epsd = Eps - epsm * I;
+  T2d    I    = T2d::I();
+  double epsm = Eps.trace()/2.;
+  T2s    Epsd = Eps - epsm * I;
 
   // return stress tensor
-  return m_K * epsm * I + m_G * Epsd;
+  return ( m_K * epsm ) * I + m_G * Epsd;
 }
 
 // -------------------------------------------- energy ---------------------------------------------
@@ -109,15 +108,14 @@ inline T2s Elastic::Sig(const T2s &Eps) const
 inline double Elastic::energy(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
-  T2s  I    = xt::eye(ndim);
-  auto epsm = trace(Eps)/ND;
-  auto Epsd = Eps - epsm * I;
-  auto epsd = std::sqrt(.5*ddot(Epsd,Epsd));
+  double epsm = Eps.trace()/2.;
+  T2s    Epsd = Eps - epsm * T2d::I();
+  double epsd = std::sqrt(.5*Epsd.ddot(Epsd));
 
   // hydrostatic part of the energy
-  auto U = m_K * std::pow(epsm,2.);
+  double U = m_K * std::pow(epsm,2.);
   // deviatoric part of the energy
-  auto V = m_G * std::pow(epsd,2.);
+  double V = m_G * std::pow(epsd,2.);
 
   // return total energy
   return U + V;

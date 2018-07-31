@@ -4,8 +4,8 @@
 
 ================================================================================================= */
 
-#ifndef XELASTOPLASTICQPOT_CARTESIAN2D_H
-#define XELASTOPLASTICQPOT_CARTESIAN2D_H
+#ifndef ELASTOPLASTICQPOT_CARTESIAN2D_H
+#define ELASTOPLASTICQPOT_CARTESIAN2D_H
 
 // -------------------------------------------------------------------------------------------------
 
@@ -13,20 +13,21 @@
 
 // ================================ ElastoPlasticQPot::Cartesian2d =================================
 
-namespace xElastoPlasticQPot {
+namespace ElastoPlasticQPot {
 namespace Cartesian2d {
 
 // --------------------------------------------- alias ---------------------------------------------
 
-static const size_t ndim = 2;
-static const double ND   = 2.;
+typedef cppmat::array <size_t> ArrS;
+typedef cppmat::array <double> ArrD;
+typedef cppmat::matrix<size_t> MatS;
+typedef cppmat::matrix<double> MatD;
+typedef cppmat::vector<size_t> ColS;
+typedef cppmat::vector<double> ColD;
 
-using T2s = xt::xtensor_fixed<double, xt::xshape<ndim,ndim>>;
-
-// ---------------------------------------- tensor algebra -----------------------------------------
-
-template<class T> inline double trace(const T &A);
-template<class T> inline double ddot (const T &A, const T &B);
+typedef cppmat::tiny::cartesian::tensor2 <double,2> T2;
+typedef cppmat::tiny::cartesian::tensor2s<double,2> T2s;
+typedef cppmat::tiny::cartesian::tensor2d<double,2> T2d;
 
 // -------------------------- equivalent stress/strain (Cartesian2d.cpp) ---------------------------
 
@@ -44,27 +45,17 @@ inline T2s Epsd(const T2s &Eps);
 
 // ----------------------- equivalent stress/strain (Cartesian2d_Matrix.cpp) -----------------------
 
-// no allocation
-inline void sigm(const xt::xtensor<double,4> &a_Sig, xt::xtensor<double,2> &a_sigm);
-inline void epsm(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_epsm);
-inline void sigd(const xt::xtensor<double,4> &a_Sig, xt::xtensor<double,2> &a_sigd);
-inline void epsd(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_epsd);
-inline void Sigd(const xt::xtensor<double,4> &a_Sig, xt::xtensor<double,4> &a_Sigd);
-inline void Epsd(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4> &a_Epsd);
+// mean
+inline ArrD sigm(const ArrD &a_Sig);
+inline ArrD epsm(const ArrD &a_Eps);
 
-// return allocated result
-inline xt::xtensor<double,2> sigm(const xt::xtensor<double,4> &a_Sig);
-inline xt::xtensor<double,2> epsm(const xt::xtensor<double,4> &a_Eps);
-inline xt::xtensor<double,2> sigd(const xt::xtensor<double,4> &a_Sig);
-inline xt::xtensor<double,2> epsd(const xt::xtensor<double,4> &a_Eps);
-inline xt::xtensor<double,4> Sigd(const xt::xtensor<double,4> &a_Sig);
-inline xt::xtensor<double,4> Epsd(const xt::xtensor<double,4> &a_Eps);
+// equivalent deviator
+inline ArrD sigd(const ArrD &a_Sig);
+inline ArrD epsd(const ArrD &a_Eps);
 
-// compute maximum, avoiding allocation
-inline double sigm_max(const xt::xtensor<double,4> &a_Sig);
-inline double epsm_max(const xt::xtensor<double,4> &a_Eps);
-inline double sigd_max(const xt::xtensor<double,4> &a_Sig);
-inline double epsd_max(const xt::xtensor<double,4> &a_Eps);
+// deviator
+inline ArrD Sigd(const ArrD &a_Sig);
+inline ArrD Epsd(const ArrD &a_Eps);
 
 // ---------------------- material point - elastic (Cartesian2d_Elastic.cpp) -----------------------
 
@@ -216,8 +207,12 @@ private:
   std::vector<Smooth>  m_Smooth;
 
   // identifiers for each matrix entry
-  xt::xtensor<size_t,2> m_type;  // type (e.g. "Type::Elastic")
-  xt::xtensor<size_t,2> m_index; // index from the relevant material vector (e.g. "m_Elastic")
+  ArrS m_type;  // type (e.g. "Type::Elastic")
+  ArrS m_index; // index from the relevant material vector (e.g. "m_Elastic")
+
+  // dimensions
+  static const size_t m_ndim=2;   // number of dimensions
+  static const size_t m_ncomp=3;  // number of tensor components
 
 public:
 
@@ -230,55 +225,54 @@ public:
   size_t shape(size_t i) const;
 
   // return type
-  xt::xtensor<size_t,2> type() const;
+  ArrS type() const;
 
   // return plastic yes/no
-  xt::xtensor<size_t,2> isPlastic() const;
+  ArrS isPlastic() const;
 
   // parameters
-  xt::xtensor<double,2> K() const;
-  xt::xtensor<double,2> G() const;
+  ArrD K() const;
+  ArrD G() const;
 
   // check that a type has been set everywhere
   void check() const;
 
   // set material definition for a batch of points
   // -
-  void setElastic(const xt::xtensor<size_t,2> &I,
+  void setElastic(const ArrS &I,
     double K, double G);
   // -
-  void setCusp(const xt::xtensor<size_t,2> &I,
+  void setCusp(const ArrS &I,
     double K, double G, const std::vector<double> &epsy, bool init_elastic=true);
   // -
-  void setSmooth(const xt::xtensor<size_t,2> &I,
+  void setSmooth(const ArrS &I,
     double K, double G, const std::vector<double> &epsy, bool init_elastic=true);
 
   // set material definition for a batch of points
   // -
-  void setElastic(const xt::xtensor<size_t,2> &I, const xt::xtensor<size_t,2> &idx,
-    const xt::xtensor<double,1> &K, const xt::xtensor<double,1> &G);
+  void setElastic(const ArrS &I, const ArrS &idx,
+    const ColD &K, const ColD &G);
   // -
-  void setCusp(const xt::xtensor<size_t,2> &I, const xt::xtensor<size_t,2> &idx,
-    const xt::xtensor<double,1> &K, const xt::xtensor<double,1> &G,
-    const xt::xtensor<double,2> &epsy, bool init_elastic=true);
+  void setCusp(const ArrS &I, const ArrS &idx,
+    const ColD &K, const ColD &G, const MatD &epsy, bool init_elastic=true);
   // -
-  void setSmooth(const xt::xtensor<size_t,2> &I, const xt::xtensor<size_t,2> &idx,
-    const xt::xtensor<double,1> &K, const xt::xtensor<double,1> &G,
-    const xt::xtensor<double,2> &epsy, bool init_elastic=true);
+  void setSmooth(const ArrS &I, const ArrS &idx,
+    const ColD &K, const ColD &G, const MatD &epsy, bool init_elastic=true);
 
-  // compute (no allocation)
-  void Sig   (const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4> &a_Sig   ) const;
-  void energy(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_energy) const;
-  void find  (const xt::xtensor<double,4> &a_Eps, xt::xtensor<size_t,2> &a_find  ) const;
-  void epsy  (const xt::xtensor<size_t,2> &a_idx, xt::xtensor<double,2> &a_epsy  ) const;
-  void epsp  (const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_epsp  ) const;
+  // stress
+  ArrD Sig(const ArrD &a_Eps) const;
 
-  // compute (return allocated result)
-  xt::xtensor<double,4> Sig   (const xt::xtensor<double,4> &a_Eps) const;
-  xt::xtensor<double,2> energy(const xt::xtensor<double,4> &a_Eps) const;
-  xt::xtensor<size_t,2> find  (const xt::xtensor<double,4> &a_Eps) const;
-  xt::xtensor<double,2> epsy  (const xt::xtensor<size_t,2> &a_idx) const;
-  xt::xtensor<double,2> epsp  (const xt::xtensor<double,4> &a_Eps) const;
+  // energy
+  ArrD energy(const ArrD &a_Eps) const;
+
+  // index of the current yield strain
+  ArrS find(const ArrD &a_Eps) const;
+
+  // certain yield strain
+  ArrD epsy(const ArrS &a_idx) const;
+
+  // equivalent plastic strain
+  ArrD epsp(const ArrD &a_Eps) const;
 
 };
 
