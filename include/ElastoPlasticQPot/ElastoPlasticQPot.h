@@ -23,6 +23,8 @@
 #include <xtensor/xfixed.hpp>
 #include <xtensor/xview.hpp>
 #include <xtensor/xio.hpp>
+#include <xtensor/xoperation.hpp>
+#include <xtensor/xmath.hpp>
 
 // ---------------------------------------- dummy operation ----------------------------------------
 

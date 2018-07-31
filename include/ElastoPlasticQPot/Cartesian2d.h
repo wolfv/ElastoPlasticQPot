@@ -25,8 +25,8 @@ using T2s = xt::xtensor_fixed<double, xt::xshape<ndim,ndim>>;
 
 // ---------------------------------------- tensor algebra -----------------------------------------
 
-inline double trace(const T2s &A);
-inline double ddot (const T2s &A, const T2s &B);
+template<class T> inline double trace(const T &A);
+template<class T> inline double ddot (const T &A, const T &B);
 
 // -------------------------- equivalent stress/strain (Cartesian2d.cpp) ---------------------------
 
