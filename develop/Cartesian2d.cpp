@@ -3,9 +3,9 @@
 
 #define EQ(a,b) REQUIRE_THAT( (a), Catch::WithinAbs((b), 1.e-12) );
 
-#include "../include/ElastoPlasticQPot/ElastoPlasticQPot.h"
+#include "../include/xElastoPlasticQPot/ElastoPlasticQPot.h"
 
-namespace GM = ElastoPlasticQPot::Cartesian2d;
+namespace GM = xElastoPlasticQPot::Cartesian2d;
 
 // =================================================================================================
 

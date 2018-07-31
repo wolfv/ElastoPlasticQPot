@@ -10,20 +10,20 @@ include(GNUInstallDirs)
 # ----------------
 
 # name
-project(ElastoPlasticQPot)
+project(xElastoPlasticQPot)
 
 # file that contains the version information
-set(parse_version include/${PROJECT_NAME}/${PROJECT_NAME}.h)
+set(parse_version include/xElastoPlasticQPot/ElastoPlasticQPot.h)
 
 # header files
 set(headers
-  include/${PROJECT_NAME}/ElastoPlasticQPot.h
-  include/${PROJECT_NAME}/Cartesian2d.h
-  include/${PROJECT_NAME}/Cartesian2d.hpp
-  include/${PROJECT_NAME}/Cartesian2d_Matrix.hpp
-  include/${PROJECT_NAME}/Cartesian2d_Elastic.hpp
-  include/${PROJECT_NAME}/Cartesian2d_Cusp.hpp
-  include/${PROJECT_NAME}/Cartesian2d_Smooth.hpp
+  include/xElastoPlasticQPot/ElastoPlasticQPot.h
+  include/xElastoPlasticQPot/Cartesian2d.h
+  include/xElastoPlasticQPot/Cartesian2d.hpp
+  include/xElastoPlasticQPot/Cartesian2d_Matrix.hpp
+  include/xElastoPlasticQPot/Cartesian2d_Elastic.hpp
+  include/xElastoPlasticQPot/Cartesian2d_Cusp.hpp
+  include/xElastoPlasticQPot/Cartesian2d_Smooth.hpp
 )
 
 # automatically parse the version number
@@ -44,8 +44,8 @@ set(ELASTOPLASTICQPOT_INCLUDE_DIR "${CMAKE_INSTALL_INCLUDEDIR}")
 set(INCLUDE_INSTALL_DIR           "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")
 set(CMAKEPACKAGE_INSTALL_DIR      "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
 set(PKGCONFIG_INSTALL_DIR         "${CMAKE_INSTALL_DATADIR}/pkgconfig")
-set(fcmake                        "${PROJECT_NAME}Config.cmake")
-set(fpkg                          "${PROJECT_NAME}.pc")
+set(fcmake                        "ElastoPlasticQPotConfig.cmake")
+set(fpkg                          "ElastoPlasticQPot.pc")
 
 # options
 # -------
@@ -71,8 +71,8 @@ endif()
 # ---------------
 
 configure_package_config_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake.in
-  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+  ${CMAKE_CURRENT_SOURCE_DIR}/ElastoPlasticQPotConfig.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/ElastoPlasticQPotConfig.cmake
   PATH_VARS ELASTOPLASTICQPOT_INCLUDE_DIR ELASTOPLASTICQPOT_ROOT_DIR
   INSTALL_DESTINATION ${CMAKEPACKAGE_INSTALL_DIR}
   NO_CHECK_REQUIRED_COMPONENTS_MACRO

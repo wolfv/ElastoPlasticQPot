@@ -4,8 +4,8 @@
 
 ================================================================================================= */
 
-#ifndef ELASTOPLASTICQPOT_CARTESIAN2D_H
-#define ELASTOPLASTICQPOT_CARTESIAN2D_H
+#ifndef XELASTOPLASTICQPOT_CARTESIAN2D_H
+#define XELASTOPLASTICQPOT_CARTESIAN2D_H
 
 // -------------------------------------------------------------------------------------------------
 
@@ -13,7 +13,7 @@
 
 // ================================ ElastoPlasticQPot::Cartesian2d =================================
 
-namespace ElastoPlasticQPot {
+namespace xElastoPlasticQPot {
 namespace Cartesian2d {
 
 // --------------------------------------------- alias ---------------------------------------------

@@ -4,8 +4,8 @@
 
 ================================================================================================= */
 
-#ifndef ELASTOPLASTICQPOT_H
-#define ELASTOPLASTICQPOT_H
+#ifndef XELASTOPLASTICQPOT_H
+#define XELASTOPLASTICQPOT_H
 
 // --------------------------------------- include libraries ---------------------------------------
 
@@ -40,7 +40,7 @@
 #define ELASTOPLASTICQPOT_VERSION_AT_LEAST(x,y,z) \
   (ELASTOPLASTICQPOT_WORLD_VERSION>x || (ELASTOPLASTICQPOT_WORLD_VERSION>=x && \
   (ELASTOPLASTICQPOT_MAJOR_VERSION>y || (ELASTOPLASTICQPOT_MAJOR_VERSION>=y && \
-                              ELASTOPLASTICQPOT_MINOR_VERSION>=z))))
+                                         ELASTOPLASTICQPOT_MINOR_VERSION>=z))))
 
 #define ELASTOPLASTICQPOT_VERSION(x,y,z) \
   (ELASTOPLASTICQPOT_WORLD_VERSION==x && \

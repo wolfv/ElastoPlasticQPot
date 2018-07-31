@@ -4,8 +4,8 @@
 
 ================================================================================================= */
 
-#ifndef ELASTOPLASTICQPOT_CARTESIAN2D_MATRIX_CPP
-#define ELASTOPLASTICQPOT_CARTESIAN2D_MATRIX_CPP
+#ifndef XELASTOPLASTICQPOT_CARTESIAN2D_MATRIX_CPP
+#define XELASTOPLASTICQPOT_CARTESIAN2D_MATRIX_CPP
 
 // -------------------------------------------------------------------------------------------------
 
@@ -13,7 +13,7 @@
 
 // =================================================================================================
 
-namespace ElastoPlasticQPot {
+namespace xElastoPlasticQPot {
 namespace Cartesian2d {
 
 // ------------------------------------------ constructor ------------------------------------------
