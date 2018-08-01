@@ -28,6 +28,8 @@ using T2s = xt::xtensor_fixed<double, xt::xshape<ndim,ndim>>;
 template<class T> inline double trace(const T &A);
 template<class T> inline double ddot (const T &A, const T &B);
 
+inline T2s I();
+
 // -------------------------- equivalent stress/strain (Cartesian2d.cpp) ---------------------------
 
 // mean

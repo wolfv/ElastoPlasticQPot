@@ -40,7 +40,7 @@ inline double Elastic::G() const
 
 inline double Elastic::epsd(const T2s &Eps) const
 {
-  T2s  I    = xt::eye(ndim);
+  T2s  I    = eye();
   auto Epsd = Eps - trace(Eps)/ND * I;
 
   return std::sqrt(.5*ddot(Epsd,Epsd));
@@ -96,7 +96,7 @@ inline size_t Elastic::find(double epsd) const
 inline T2s Elastic::Sig(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
-  T2s  I    = xt::eye(ndim);
+  T2s  I    = eye();
   auto epsm = trace(Eps)/ND;
   auto Epsd = Eps - epsm * I;
 
@@ -109,7 +109,7 @@ inline T2s Elastic::Sig(const T2s &Eps) const
 inline double Elastic::energy(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
-  T2s  I    = xt::eye(ndim);
+  T2s  I    = eye();
   auto epsm = trace(Eps)/ND;
   auto Epsd = Eps - epsm * I;
   auto epsd = std::sqrt(.5*ddot(Epsd,Epsd));

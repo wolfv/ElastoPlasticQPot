@@ -70,7 +70,7 @@ inline double Cusp::G() const
 
 inline double Cusp::epsd(const T2s &Eps) const
 {
-  T2s  I    = xt::eye(ndim);
+  T2s  I    = eye();
   auto Epsd = Eps - trace(Eps)/ND * I;
 
   return std::sqrt(.5*ddot(Epsd,Epsd));
@@ -144,7 +144,7 @@ inline size_t Cusp::find(double epsd) const
 inline T2s Cusp::Sig(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
-  T2s    I    = xt::eye(ndim);
+  T2s    I    = eye();
   double epsm = trace(Eps)/ND;
   auto   Epsd = Eps - epsm * I;
   double epsd = std::sqrt(.5*ddot(Epsd,Epsd));
@@ -165,7 +165,7 @@ inline T2s Cusp::Sig(const T2s &Eps) const
 inline double Cusp::energy(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
-  T2s    I    = xt::eye(ndim);
+  T2s    I    = eye();
   double epsm = trace(Eps)/ND;
   auto   Epsd = Eps - epsm * I;
   double epsd = std::sqrt(.5*ddot(Epsd,Epsd));

@@ -338,8 +338,8 @@ inline void Matrix::Sig(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4
       for ( size_t k = 0 ; k < m_type.shape()[1] ; ++k )
       {
         // - alias
-        auto Eps = xt::view(a_Eps, e, k, xt::all(), xt::all());
-        auto Sig = xt::view(a_Sig, e, k, xt::all(), xt::all());
+        auto Eps = xt::view(a_Eps, e, k);
+        auto Sig = xt::view(a_Sig, e, k);
         // - compute
         switch ( m_type(e,k) )
         {

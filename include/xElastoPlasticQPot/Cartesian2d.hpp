@@ -34,6 +34,18 @@ inline double ddot(const T &A, const T &B)
   return A(0,0) * B(0,0) + 2.0 * A(0,1) * B(0,1) + A(1,1) * B(1,1);
 }
 
+// ------------------------------------------ unit tensor ------------------------------------------
+
+inline T2s eye()
+{
+  T2s I;
+
+  I[0] = I[3] = 1.;
+  I[1] = I[2] = 0.;
+
+  return I;
+}
+
 // ===================================== TENSOR DECOMPOSITION ======================================
 
 // -------------------------------------- hydrostatic strain ---------------------------------------
@@ -47,7 +59,7 @@ inline double epsm(const T2s &Eps)
 
 inline double epsd(const T2s &Eps)
 {
-  T2s I    = xt::eye(ndim);
+  T2s I    = eye();
   T2s Epsd = Eps - trace(Eps)/ND * I;
 
   return std::sqrt(.5*ddot(Epsd,Epsd));
@@ -57,7 +69,7 @@ inline double epsd(const T2s &Eps)
 
 inline T2s Epsd(const T2s &Eps)
 {
-  T2s I = xt::eye(ndim);
+  T2s I = eye();
 
   return Eps - trace(Eps)/ND * I;
 }
@@ -73,7 +85,7 @@ inline double sigm(const T2s &Sig)
 
 inline double sigd(const T2s &Sig)
 {
-  T2s I    = xt::eye(ndim);
+  T2s I    = eye();
   T2s Sigd = Sig - trace(Sig)/ND * I;
 
   return std::sqrt(2.*ddot(Sigd,Sigd));
@@ -83,7 +95,7 @@ inline double sigd(const T2s &Sig)
 
 inline T2s Sigd(const T2s &Sig)
 {
-  T2s I = xt::eye(ndim);
+  T2s I = eye();
 
   return Sig - trace(Sig)/ND * I;
 }
@@ -139,7 +151,7 @@ inline void epsd(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_ep
   #pragma omp parallel
   {
     // identity tensor
-    T2s I = xt::eye(ndim);
+    T2s I = eye();
 
     // loop over all points
     #pragma omp for
@@ -183,7 +195,7 @@ inline void Epsd(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4> &a_Ep
   #pragma omp parallel
   {
     // identity tensor
-    T2s I = xt::eye(ndim);
+    T2s I = eye();
 
     // loop over all points
     #pragma omp for
@@ -261,7 +273,7 @@ inline void sigd(const xt::xtensor<double,4> &a_Sig, xt::xtensor<double,2> &a_si
   #pragma omp parallel
   {
     // identity tensor
-    T2s I = xt::eye(ndim);
+    T2s I = eye();
 
     // loop over all points
     #pragma omp for
@@ -305,7 +317,7 @@ inline void Sigd(const xt::xtensor<double,4> &a_Sig, xt::xtensor<double,4> &a_Si
   #pragma omp parallel
   {
     // identity tensor
-    T2s I = xt::eye(ndim);
+    T2s I = eye();
 
     // loop over all points
     #pragma omp for
@@ -413,7 +425,7 @@ inline double epsd_max(const xt::xtensor<double,4> &a_Eps)
   assert( a_Eps.shape()[3] == ndim );
 
   // identity tensor
-  T2s I = xt::eye(ndim);
+  T2s I = eye();
 
   // allocate maximum
   double out;
@@ -454,7 +466,7 @@ inline double sigd_max(const xt::xtensor<double,4> &a_Sig)
   assert( a_Sig.shape()[3] == ndim );
 
   // identity tensor
-  T2s I = xt::eye(ndim);
+  T2s I = eye();
 
   // allocate maximum
   double out;
