@@ -18,10 +18,7 @@ namespace Cartesian2d {
 
 // --------------------------------------------- alias ---------------------------------------------
 
-static const size_t ndim = 2;
-static const double ND   = 2.;
-
-using T2s = xt::xtensor_fixed<double, xt::xshape<ndim,ndim>>;
+using T2s = xt::xtensor_fixed<double, xt::xshape<2,2>>;
 
 // ---------------------------------------- tensor algebra -----------------------------------------
 

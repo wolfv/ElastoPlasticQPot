@@ -71,7 +71,7 @@ inline double Cusp::G() const
 inline double Cusp::epsd(const T2s &Eps) const
 {
   T2s  I    = eye();
-  auto Epsd = Eps - trace(Eps)/ND * I;
+  auto Epsd = Eps - trace(Eps)/2. * I;
 
   return std::sqrt(.5*ddot(Epsd,Epsd));
 }
@@ -145,7 +145,7 @@ inline T2s Cusp::Sig(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
   T2s    I    = eye();
-  double epsm = trace(Eps)/ND;
+  double epsm = trace(Eps)/2.;
   auto   Epsd = Eps - epsm * I;
   double epsd = std::sqrt(.5*ddot(Epsd,Epsd));
 
@@ -166,7 +166,7 @@ inline double Cusp::energy(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
   T2s    I    = eye();
-  double epsm = trace(Eps)/ND;
+  double epsm = trace(Eps)/2.;
   auto   Epsd = Eps - epsm * I;
   double epsd = std::sqrt(.5*ddot(Epsd,Epsd));
 

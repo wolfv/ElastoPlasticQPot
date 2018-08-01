@@ -70,7 +70,7 @@ inline double Smooth::G() const
 
 inline double Smooth::epsd(const T2s &Eps) const
 {
-  auto Epsd = Eps - trace(Eps)/ND * eye();
+  auto Epsd = Eps - trace(Eps)/2. * eye();
 
   return std::sqrt(.5*ddot(Epsd,Epsd));
 }
@@ -144,7 +144,7 @@ inline T2s Smooth::Sig(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
   T2s  I    = eye();
-  auto epsm = trace(Eps)/ND;
+  auto epsm = trace(Eps)/2.;
   auto Epsd = Eps - epsm * I;
   auto epsd = std::sqrt(.5*ddot(Epsd,Epsd));
 
@@ -166,7 +166,7 @@ inline double Smooth::energy(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
   T2s  I    = eye();
-  auto epsm = trace(Eps)/ND;
+  auto epsm = trace(Eps)/2.;
   auto Epsd = Eps - epsm * I;
   auto epsd = std::sqrt(.5*ddot(Epsd,Epsd));
 

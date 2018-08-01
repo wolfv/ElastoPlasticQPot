@@ -324,8 +324,8 @@ inline void Matrix::Sig(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4
   // check input
   assert( a_Eps.shape()[0] == m_type.shape()[0] );
   assert( a_Eps.shape()[1] == m_type.shape()[1] );
-  assert( a_Eps.shape()[2] == ndim              );
-  assert( a_Eps.shape()[3] == ndim              );
+  assert( a_Eps.shape()[2] == 2                 );
+  assert( a_Eps.shape()[3] == 2                 );
   assert( a_Eps.shape()    == a_Sig.shape()     );
 
   // start threads (all allocated variables inside this block are local to each thread)
@@ -361,8 +361,8 @@ inline void Matrix::energy(const xt::xtensor<double,4> &a_Eps, xt::xtensor<doubl
   // check input
   assert( a_Eps.shape()[0] == m_type.shape()[0] );
   assert( a_Eps.shape()[1] == m_type.shape()[1] );
-  assert( a_Eps.shape()[2] == ndim              );
-  assert( a_Eps.shape()[3] == ndim              );
+  assert( a_Eps.shape()[2] == 2                 );
+  assert( a_Eps.shape()[3] == 2                 );
   assert( a_energy.shape() == m_type.shape()    );
 
   // start threads (all allocated variables inside this block are local to each thread)
@@ -396,8 +396,8 @@ inline void Matrix::find(const xt::xtensor<double,4> &a_Eps, xt::xtensor<size_t,
   // check input
   assert( a_Eps.shape()[0] == m_type.shape()[0] );
   assert( a_Eps.shape()[1] == m_type.shape()[1] );
-  assert( a_Eps.shape()[2] == ndim              );
-  assert( a_Eps.shape()[3] == ndim              );
+  assert( a_Eps.shape()[2] == 2                 );
+  assert( a_Eps.shape()[3] == 2                 );
   assert( a_idx.shape()    == m_type.shape()    );
 
   // start threads (all allocated variables inside this block are local to each thread)
@@ -460,8 +460,8 @@ inline void Matrix::epsp(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,
   // check input
   assert( a_Eps.shape()[0] == m_type.shape()[0] );
   assert( a_Eps.shape()[1] == m_type.shape()[1] );
-  assert( a_Eps.shape()[2] == ndim              );
-  assert( a_Eps.shape()[3] == ndim              );
+  assert( a_Eps.shape()[2] == 2                 );
+  assert( a_Eps.shape()[3] == 2                 );
   assert( a_epsp.shape()   == m_type.shape()    );
 
   // start threads (all allocated variables inside this block are local to each thread)
