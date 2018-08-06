@@ -57,6 +57,9 @@ inline ArrD epsd(const ArrD &a_Eps);
 inline ArrD Sigd(const ArrD &a_Sig);
 inline ArrD Epsd(const ArrD &a_Eps);
 
+// maximum
+inline double epsd_max(const ArrD &a_Eps);
+
 // ---------------------- material point - elastic (Cartesian2d_Elastic.cpp) -----------------------
 
 class Elastic
@@ -258,6 +261,9 @@ public:
   // -
   void setSmooth(const ArrS &I, const ArrS &idx,
     const ColD &K, const ColD &G, const MatD &epsy, bool init_elastic=true);
+
+  // stress
+  void Sig(const ArrD &a_Eps, ArrD &a_Sig) const;
 
   // stress
   ArrD Sig(const ArrD &a_Eps) const;

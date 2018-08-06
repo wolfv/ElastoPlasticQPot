@@ -52,13 +52,13 @@ sm.def("sigm", py::overload_cast<const T2s & >(&SM::sigm), "Mean stress"        
 sm.def("sigd", py::overload_cast<const T2s & >(&SM::sigd), "Eq. stress deviator", py::arg("Sig"));
 sm.def("Sigd", py::overload_cast<const T2s & >(&SM::Sigd), "Stress deviator"    , py::arg("Sig"));
 
-sm.def("epsm", py::overload_cast<const ArrD &>(&SM::epsm), "Mean strain"        , py::arg("Eps"));
-sm.def("epsd", py::overload_cast<const ArrD &>(&SM::epsd), "Eq. strain deviator", py::arg("Eps"));
-sm.def("Epsd", py::overload_cast<const ArrD &>(&SM::Epsd), "Strain deviator"    , py::arg("Eps"));
+sm.def("epsm", py::overload_cast<const ArrD &>(&SM::epsm), "Mean strain"        , py::arg("a_Eps"));
+sm.def("epsd", py::overload_cast<const ArrD &>(&SM::epsd), "Eq. strain deviator", py::arg("a_Eps"));
+sm.def("Epsd", py::overload_cast<const ArrD &>(&SM::Epsd), "Strain deviator"    , py::arg("a_Eps"));
 
-sm.def("sigm", py::overload_cast<const ArrD &>(&SM::sigm), "Mean stress"        , py::arg("Sig"));
-sm.def("sigd", py::overload_cast<const ArrD &>(&SM::sigd), "Eq. stress deviator", py::arg("Sig"));
-sm.def("Sigd", py::overload_cast<const ArrD &>(&SM::Sigd), "Stress deviator"    , py::arg("Sig"));
+sm.def("sigm", py::overload_cast<const ArrD &>(&SM::sigm), "Mean stress"        , py::arg("a_Sig"));
+sm.def("sigd", py::overload_cast<const ArrD &>(&SM::sigd), "Eq. stress deviator", py::arg("a_Sig"));
+sm.def("Sigd", py::overload_cast<const ArrD &>(&SM::Sigd), "Stress deviator"    , py::arg("a_Sig"));
 
 // -------------------------------------------------------------------------------------------------
 
@@ -79,7 +79,7 @@ py::class_<SM::Elastic>(sm, "Elastic")
   .def("find"  , py::overload_cast<const T2s &>(&SM::Elastic::find, py::const_), py::arg("Eps" ))
   .def("find"  , py::overload_cast<double     >(&SM::Elastic::find, py::const_), py::arg("epsd"))
   // print to screen
-  .def("__repr__", [](const SM::Elastic &a){
+  .def("__repr__", [](const SM::Elastic &){
     return "<ElastoPlasticQPot.Cartesian2d.Elastic>"; });
 
 // -------------------------------------------------------------------------------------------------
@@ -103,7 +103,7 @@ py::class_<SM::Cusp>(sm, "Cusp")
   .def("find"  , py::overload_cast<const T2s &>(&SM::Cusp::find, py::const_), py::arg("Eps" ))
   .def("find"  , py::overload_cast<double     >(&SM::Cusp::find, py::const_), py::arg("epsd"))
   // print to screen
-  .def("__repr__", [](const SM::Cusp &a){
+  .def("__repr__", [](const SM::Cusp &){
     return "<ElastoPlasticQPot.Cartesian2d.Cusp>"; });
 
 // -------------------------------------------------------------------------------------------------
@@ -127,7 +127,7 @@ py::class_<SM::Smooth>(sm, "Smooth")
   .def("find"  , py::overload_cast<const T2s &>(&SM::Smooth::find, py::const_), py::arg("Eps" ))
   .def("find"  , py::overload_cast<double     >(&SM::Smooth::find, py::const_), py::arg("epsd"))
   // print to screen
-  .def("__repr__", [](const SM::Smooth &a){
+  .def("__repr__", [](const SM::Smooth &){
     return "<ElastoPlasticQPot.Cartesian2d.Smooth>"; });
 
 // -------------------------------------------------------------------------------------------------
@@ -162,13 +162,13 @@ py::class_<SM::Matrix>(sm, "Matrix")
   .def("shape"     , py::overload_cast<size_t>(&SM::Matrix::shape, py::const_))
   .def("shape"     , py::overload_cast<      >(&SM::Matrix::shape, py::const_))
   .def("type"      , &SM::Matrix::type)
-  .def("Sig"       , &SM::Matrix::Sig   , py::arg("a_Eps"))
+  .def("Sig"       , py::overload_cast<const ArrD &>(&SM::Matrix::Sig, py::const_), py::arg("a_Eps"))
   .def("energy"    , &SM::Matrix::energy, py::arg("a_Eps"))
   .def("epsy"      , &SM::Matrix::epsy  , py::arg("a_idx"))
   .def("epsp"      , &SM::Matrix::epsp  , py::arg("a_Eps"))
   .def("find"      , &SM::Matrix::find  , py::arg("a_Eps"))
   // print to screen
-  .def("__repr__", [](const SM::Matrix &a){
+  .def("__repr__", [](const SM::Matrix &){
     return "<ElastoPlasticQPot.Cartesian2d.Matrix>"; });
 
 // -------------------------------------------------------------------------------------------------

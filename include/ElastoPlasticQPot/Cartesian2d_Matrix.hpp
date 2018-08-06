@@ -315,6 +315,42 @@ inline void Matrix::setSmooth(const ArrS &I, const ArrS &idx,
 
 // -------------------------------- compute stress for all entries ---------------------------------
 
+inline void Matrix::Sig(const ArrD &a_Eps, ArrD &a_Sig) const
+{
+  assert( a_Eps.shape()   == a_Sig.shape() );
+  assert( a_Eps.shape(-1) == m_ncomp );
+  assert( cppmat::del(a_Eps.shape(),-1) == m_type.shape() );
+
+  // iterators
+  auto i_Eps = a_Eps.begin();
+  auto i_Sig = a_Sig.begin();
+
+  // start threads (all allocated variables inside this block are local to each thread)
+  #pragma omp parallel
+  {
+    // loop over all points
+    #pragma omp for
+    for ( size_t i = 0 ; i < m_type.size() ; ++i )
+    {
+      // copy strain from matrix
+      T2s Eps = T2s::Copy(i_Eps+i*m_ncomp);
+      T2s Sig;
+      // compute
+      switch ( m_type[i] )
+      {
+        case Type::Elastic: Sig = m_Elastic[m_index[i]].Sig(Eps); break;
+        case Type::Cusp   : Sig = m_Cusp   [m_index[i]].Sig(Eps); break;
+        case Type::Smooth : Sig = m_Smooth [m_index[i]].Sig(Eps); break;
+        default: std::runtime_error("Unknown material");
+      }
+      // store
+      std::copy(Sig.begin(), Sig.end(), i_Sig+i*m_ncomp);
+    }
+  }
+}
+
+// -------------------------------- compute stress for all entries ---------------------------------
+
 inline ArrD Matrix::Sig(const ArrD &a_Eps) const
 {
   // check input

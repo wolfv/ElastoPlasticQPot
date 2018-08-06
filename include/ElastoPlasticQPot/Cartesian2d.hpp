@@ -274,6 +274,36 @@ inline ArrD Sigd(const ArrD &a_Sig)
   return a_Sigd;
 }
 
+// ------------------------------ equivalent strain deviator - matrix ------------------------------
+
+inline double epsd_max(const ArrD &a_Eps)
+{
+  // number of tensor-components
+  size_t ncomp = 3;
+  // number of entries
+  size_t N = a_Eps.size() / ncomp;
+
+  // check input
+  assert( a_Eps.rank()    >= 2     );
+  assert( a_Eps.shape(-1) == ncomp );
+
+  // initialize output
+  double out = 0.0;
+
+  // loop over all points
+  for ( size_t i = 0 ; i < N ; ++i )
+  {
+    // map from matrix of strains
+    T2s Eps = T2s::Copy(a_Eps.index(i*ncomp));
+    // compute the strain deviator
+    T2s Epsd = Eps - Eps.trace()/2. * T2d::I();
+    // compute/store the equivalent strain deviator
+    out = std::max(out, std::sqrt(.5*Epsd.ddot(Epsd)));
+  }
+
+  return out;
+}
+
 // =================================================================================================
 
 }} // namespace ...
