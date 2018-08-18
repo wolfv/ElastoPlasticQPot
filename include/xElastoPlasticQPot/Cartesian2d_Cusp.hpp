@@ -70,8 +70,7 @@ inline double Cusp::G() const
 
 inline double Cusp::epsd(const T2s &Eps) const
 {
-  T2s  I    = eye();
-  auto Epsd = Eps - trace(Eps)/2. * I;
+  auto Epsd = Eps - trace(Eps)/2. * eye();
 
   return std::sqrt(.5*ddot(Epsd,Epsd));
 }

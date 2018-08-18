@@ -19,6 +19,7 @@
 #include <iostream>
 #include <vector>
 #include <xtensor/xarray.hpp>
+#include <xtensor/xnoalias.hpp>
 #include <xtensor/xtensor.hpp>
 #include <xtensor/xfixed.hpp>
 #include <xtensor/xview.hpp>

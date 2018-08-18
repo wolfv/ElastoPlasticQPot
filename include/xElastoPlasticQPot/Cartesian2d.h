@@ -20,10 +20,14 @@ namespace Cartesian2d {
 
 using T2s = xt::xtensor_fixed<double, xt::xshape<2,2>>;
 
+
 // ---------------------------------------- tensor algebra -----------------------------------------
 
-template<class T> inline double trace(const T &A);
-template<class T> inline double ddot (const T &A, const T &B);
+template <class T>
+inline double trace(const T &A);
+
+template <class T>
+inline double ddot (const T &A, const T &B);
 
 inline T2s I();
 

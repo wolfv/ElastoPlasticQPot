@@ -38,12 +38,7 @@ inline double ddot(const T &A, const T &B)
 
 inline T2s eye()
 {
-  T2s I;
-
-  I[0] = I[3] = 1.;
-  I[1] = I[2] = 0.;
-
-  return I;
+  return T2s({{1, 0}, {0, 1}});
 }
 
 // ===================================== TENSOR DECOMPOSITION ======================================
@@ -59,8 +54,7 @@ inline double epsm(const T2s &Eps)
 
 inline double epsd(const T2s &Eps)
 {
-  T2s I    = eye();
-  T2s Epsd = Eps - trace(Eps)/2. * I;
+  T2s Epsd = Eps - trace(Eps)/2. * eye();
 
   return std::sqrt(.5*ddot(Epsd,Epsd));
 }
@@ -69,9 +63,7 @@ inline double epsd(const T2s &Eps)
 
 inline T2s Epsd(const T2s &Eps)
 {
-  T2s I = eye();
-
-  return Eps - trace(Eps)/2. * I;
+  return Eps - trace(Eps)/2. * eye();
 }
 
 // -------------------------------------- hydrostatic stress ---------------------------------------
@@ -85,8 +77,7 @@ inline double sigm(const T2s &Sig)
 
 inline double sigd(const T2s &Sig)
 {
-  T2s I    = eye();
-  T2s Sigd = Sig - trace(Sig)/2. * I;
+  T2s Sigd = Sig - trace(Sig)/2. * eye();
 
   return std::sqrt(2.*ddot(Sigd,Sigd));
 }
@@ -95,9 +86,7 @@ inline double sigd(const T2s &Sig)
 
 inline T2s Sigd(const T2s &Sig)
 {
-  T2s I = eye();
-
-  return Sig - trace(Sig)/2. * I;
+  return Sig - trace(Sig)/2. * eye();
 }
 
 // ================================= TENSOR DECOMPOSITION - MATRIX =================================
@@ -207,7 +196,7 @@ inline void Epsd(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4> &a_Ep
         auto Eps  = xt::view(a_Eps , e, k, xt::all(), xt::all());
         auto Epsd = xt::view(a_Epsd, e, k, xt::all(), xt::all());
         // - strain deviator
-        Epsd = Eps - trace(Eps)/2. * I;
+        xt::noalias(Epsd) = Eps - trace(Eps)/2. * I;
       }
     }
   }
@@ -329,7 +318,7 @@ inline void Sigd(const xt::xtensor<double,4> &a_Sig, xt::xtensor<double,4> &a_Si
         auto Sig  = xt::view(a_Sig , e, k, xt::all(), xt::all());
         auto Sigd = xt::view(a_Sigd, e, k, xt::all(), xt::all());
         // - strain deviator
-        Sigd = Sig - trace(Sig)/2. * I;
+        xt::noalias(Sigd) = Sig - trace(Sig)/2. * I;
       }
     }
   }

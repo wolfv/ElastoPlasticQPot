@@ -343,9 +343,9 @@ inline void Matrix::Sig(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4
         // - compute
         switch ( m_type(e,k) )
         {
-          case Type::Elastic: Sig = m_Elastic[m_index(e,k)].Sig(Eps); break;
-          case Type::Cusp   : Sig = m_Cusp   [m_index(e,k)].Sig(Eps); break;
-          case Type::Smooth : Sig = m_Smooth [m_index(e,k)].Sig(Eps); break;
+          case Type::Elastic: xt::noalias(Sig) = m_Elastic[m_index(e,k)].Sig(Eps); break;
+          case Type::Cusp   : xt::noalias(Sig) = m_Cusp   [m_index(e,k)].Sig(Eps); break;
+          case Type::Smooth : xt::noalias(Sig) = m_Smooth [m_index(e,k)].Sig(Eps); break;
           default: std::runtime_error("Unknown material");
         }
       }
@@ -375,13 +375,14 @@ inline void Matrix::energy(const xt::xtensor<double,4> &a_Eps, xt::xtensor<doubl
       for ( size_t k = 0 ; k < m_type.shape()[1] ; ++k )
       {
         // - alias
-        auto Eps = xt::view(a_Eps, e, k, xt::all(), xt::all());
+        auto Eps    = xt::view(a_Eps   , e, k);
+        auto energy = xt::view(a_energy, e, k);
         // - compute
         switch ( m_type(e,k) )
         {
-          case Type::Elastic: a_energy(e,k) = m_Elastic[m_index(e,k)].energy(Eps); break;
-          case Type::Cusp   : a_energy(e,k) = m_Cusp   [m_index(e,k)].energy(Eps); break;
-          case Type::Smooth : a_energy(e,k) = m_Smooth [m_index(e,k)].energy(Eps); break;
+          case Type::Elastic: energy = m_Elastic[m_index(e,k)].energy(Eps); break;
+          case Type::Cusp   : energy = m_Cusp   [m_index(e,k)].energy(Eps); break;
+          case Type::Smooth : energy = m_Smooth [m_index(e,k)].energy(Eps); break;
           default: std::runtime_error("Unknown material");
         }
       }
@@ -410,13 +411,14 @@ inline void Matrix::find(const xt::xtensor<double,4> &a_Eps, xt::xtensor<size_t,
       for ( size_t k = 0 ; k < m_type.shape()[1] ; ++k )
       {
         // - alias
-        auto Eps = xt::view(a_Eps, e, k, xt::all(), xt::all());
+        auto Eps = xt::view(a_Eps, e, k);
+        auto idx = xt::view(a_idx, e, k);
         // - compute
         switch ( m_type(e,k) )
         {
-          case Type::Elastic: a_idx(e,k) = m_Elastic[m_index(e,k)].find(Eps); break;
-          case Type::Cusp   : a_idx(e,k) = m_Cusp   [m_index(e,k)].find(Eps); break;
-          case Type::Smooth : a_idx(e,k) = m_Smooth [m_index(e,k)].find(Eps); break;
+          case Type::Elastic: idx = m_Elastic[m_index(e,k)].find(Eps); break;
+          case Type::Cusp   : idx = m_Cusp   [m_index(e,k)].find(Eps); break;
+          case Type::Smooth : idx = m_Smooth [m_index(e,k)].find(Eps); break;
           default: std::runtime_error("Unknown material");
         }
       }
@@ -441,11 +443,15 @@ inline void Matrix::epsy(const xt::xtensor<size_t,2> &a_idx, xt::xtensor<double,
     {
       for ( size_t k = 0 ; k < m_type.shape()[1] ; ++k )
       {
+        // - alias
+        auto idx  = xt::view(a_idx , e, k);
+        auto epsy = xt::view(a_epsy, e, k);
+        // - compute
         switch ( m_type(e,k) )
         {
-          case Type::Elastic: a_epsy(e,k) = m_Elastic[m_index(e,k)].epsy(a_idx(e,k)); break;
-          case Type::Cusp   : a_epsy(e,k) = m_Cusp   [m_index(e,k)].epsy(a_idx(e,k)); break;
-          case Type::Smooth : a_epsy(e,k) = m_Smooth [m_index(e,k)].epsy(a_idx(e,k)); break;
+          case Type::Elastic: epsy = m_Elastic[m_index(e,k)].epsy(idx); break;
+          case Type::Cusp   : epsy = m_Cusp   [m_index(e,k)].epsy(idx); break;
+          case Type::Smooth : epsy = m_Smooth [m_index(e,k)].epsy(idx); break;
           default: std::runtime_error("Unknown material");
         }
       }
@@ -474,13 +480,14 @@ inline void Matrix::epsp(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,
       for ( size_t k = 0 ; k < m_type.shape()[1] ; ++k )
       {
         // - alias
-        auto Eps = xt::view(a_Eps, e, k, xt::all(), xt::all());
+        auto Eps  = xt::view(a_Eps , e, k);
+        auto epsp = xt::view(a_epsp, e, k);
         // - compute
         switch ( m_type(e,k) )
         {
-          case Type::Elastic: a_epsp(e,k) = m_Elastic[m_index(e,k)].epsp(Eps); break;
-          case Type::Cusp   : a_epsp(e,k) = m_Cusp   [m_index(e,k)].epsp(Eps); break;
-          case Type::Smooth : a_epsp(e,k) = m_Smooth [m_index(e,k)].epsp(Eps); break;
+          case Type::Elastic: epsp = m_Elastic[m_index(e,k)].epsp(Eps); break;
+          case Type::Cusp   : epsp = m_Cusp   [m_index(e,k)].epsp(Eps); break;
+          case Type::Smooth : epsp = m_Smooth [m_index(e,k)].epsp(Eps); break;
           default: std::runtime_error("Unknown material");
         }
       }
