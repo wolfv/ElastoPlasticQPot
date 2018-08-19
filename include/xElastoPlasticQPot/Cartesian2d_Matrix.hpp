@@ -376,7 +376,7 @@ inline void Matrix::energy(const xt::xtensor<double,4> &a_Eps, xt::xtensor<doubl
       {
         // - alias
         auto Eps    = xt::view(a_Eps   , e, k);
-        auto energy = xt::view(a_energy, e, k);
+        auto& energy = a_energy(e, k);
         // - compute
         switch ( m_type(e,k) )
         {
